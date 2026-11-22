@@ -1,0 +1,75 @@
+{
+  "policy_id": "ENT-COMP-POLICY-2026.3",
+  "version": "2026.3.0",
+  "effective_date": "2026-07-01",
+  "owner": "Office of the Chief Risk & Compliance Officer",
+  "frameworks": ["SOX-404", "SOC2-CC6", "ASC-606", "INTERNAL-FIN-CTRL"],
+  "thresholds": {
+    "max_budget_variance_pct": 10.0,
+    "critical_budget_variance_pct": 25.0,
+    "dual_approval_threshold_usd": 50000.0,
+    "required_approvals_above_threshold": 2,
+    "required_finance_approver_roles": ["CFO", "VP_FINANCE", "CONTROLLER"],
+    "vendor_soc2_required_above_usd": 25000.0,
+    "vendor_soc2_required_classifications": ["CONFIDENTIAL", "RESTRICTED_FINANCIAL"],
+    "segregation_of_duties_enforced": true,
+    "max_unreconciled_age_days": 30,
+    "asc_606_verification_required": true
+  },
+  "controls": [
+    {
+      "control_id": "FIN-VAR-01",
+      "name": "Budget Variance Threshold Control",
+      "framework": "INTERNAL-FIN-CTRL",
+      "severity": "HIGH",
+      "description": "Actual spend must not exceed budgeted spend by more than max_budget_variance_pct (10.0%) without an approved variance waiver.",
+      "evaluation_target": "financial_summary.budget_variance_pct",
+      "operator": "lte",
+      "threshold_key": "max_budget_variance_pct",
+      "waiver_field": "financial_summary.variance_waiver_approved",
+      "remediation": "Obtain CFO variance waiver and execute cloud/vendor cost optimization plan."
+    },
+    {
+      "control_id": "SOX-APPR-02",
+      "name": "High-Value Expenditure & Wire Dual Approval",
+      "framework": "SOX-404",
+      "severity": "HIGH",
+      "description": "Every vendor contract, amendment, or treasury disbursement >= $50,000 USD must have at least 2 distinct approvers including at least one Finance leadership role (CFO, VP_FINANCE, or CONTROLLER).",
+      "evaluation_target": "approvals",
+      "threshold_key": "dual_approval_threshold_usd",
+      "required_count_key": "required_approvals_above_threshold",
+      "required_roles_key": "required_finance_approver_roles",
+      "remediation": "Halt disbursement or amendment execution until a second distinct Finance approver signs off."
+    },
+    {
+      "control_id": "SOC2-VEND-03",
+      "name": "Third-Party Vendor SOC2 Type II & DPA Verification",
+      "framework": "SOC2-CC6",
+      "severity": "CRITICAL",
+      "description": "Active vendors above $25,000 USD or handling CONFIDENTIAL/RESTRICTED_FINANCIAL data must hold a non-expired SOC2 Type II report and signed DPA as of report_date.",
+      "evaluation_target": "vendor_contracts",
+      "threshold_key": "vendor_soc2_required_above_usd",
+      "remediation": "Suspend sensitive data or payment-rail integration and require current SOC2 Type II attestation and DPA."
+    },
+    {
+      "control_id": "TRES-SOD-04",
+      "name": "Treasury & Disbursement Segregation of Duties (SoD)",
+      "framework": "SOX-404 / SOC2-CC6.1",
+      "severity": "CRITICAL",
+      "description": "No single employee may both initiate/prepare and approve or release the same treasury wire or high-value disbursement.",
+      "evaluation_target": "treasury_controls.wire_transfers",
+      "threshold_key": "segregation_of_duties_enforced",
+      "remediation": "Revoke conflicting RBAC permissions immediately, disable emergency self-override, and perform forensic review."
+    },
+    {
+      "control_id": "SOX-REV-05",
+      "name": "ASC 606 Revenue Recognition & Period-Close Evidence",
+      "framework": "SOX-404 / ASC-606",
+      "severity": "MEDIUM",
+      "description": "Recognized revenue contracts must pass ASC 606 five-step verification and period-close bank reconciliations must be complete with zero items aged > 30 days.",
+      "evaluation_target": "revenue_recognition_items & control_evidence",
+      "threshold_key": "asc_606_verification_required",
+      "remediation": "Complete ASC 606 technical accounting sign-off and clear aged suspense/reconciliation items prior to period close."
+    }
+  ]
+}

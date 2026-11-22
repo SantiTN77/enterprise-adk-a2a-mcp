@@ -1,0 +1,179 @@
+{
+  "doc_id": "samples/q3_cloud_vendor_review.json",
+  "scenario_id": "q3_cloud_vendor_review",
+  "title": "Q3 Cloud & AI Vendor Spend Review",
+  "description": "FY2026 Q3 cloud infrastructure and AI vendor spend review for Meridian Retail Analytics Corp. — exhibits +28.00% budget variance overrun and missing Finance dual-approval on a $660k GPU amendment.",
+  "default_prompt": "Analyze financial variance and audit compliance controls for Q3 vendor spend in samples/q3_cloud_vendor_review.json.",
+  "company_name": "Meridian Retail Analytics Corp.",
+  "fiscal_period": "FY2026-Q3",
+  "report_date": "2026-10-12",
+  "currency": "USD",
+  "document_type": "CLOUD_VENDOR_SPEND_REVIEW",
+  "financial_summary": {
+    "revenue_usd": 12600000.0,
+    "operating_expenses_usd": 10950000.0,
+    "other_operating_expenses_usd": 6854000.0,
+    "operating_income_usd": 1650000.0,
+    "total_assets_usd": 34200000.0,
+    "total_liabilities_usd": 14800000.0,
+    "operating_cash_flow_usd": 1920000.0,
+    "budgeted_spend_usd": 3200000.0,
+    "actual_spend_usd": 4096000.0,
+    "budget_variance_usd": 896000.0,
+    "budget_variance_pct": 28.0,
+    "variance_waiver_approved": false
+  },
+  "unit_metrics": {
+    "cost_per_1k_inference_requests_usd": 1.84,
+    "gpu_cluster_utilization_pct": 46.2,
+    "uncommitted_on_demand_spend_pct": 61.5,
+    "cloud_spend_pct_of_revenue": 32.51,
+    "active_retail_tenants": 94
+  },
+  "line_items": [
+    {
+      "line_id": "CLD-GPU-01",
+      "category": "GPU Inference Clusters (Uncommitted On-Demand)",
+      "cost_center": "CC-210",
+      "budgeted_usd": 1100000.0,
+      "actual_usd": 1760000.0,
+      "variance_usd": 660000.0,
+      "variance_pct": 60.0,
+      "notes": "Unscheduled burst scaling on on-demand GPU instances without reserved capacity commitments."
+    },
+    {
+      "line_id": "CLD-DW-02",
+      "category": "Managed Data Warehouse & Cross-Region Egress",
+      "cost_center": "CC-215",
+      "budgeted_usd": 900000.0,
+      "actual_usd": 1080000.0,
+      "variance_usd": 180000.0,
+      "variance_pct": 20.0,
+      "notes": "Increased cross-region replication traffic from unpartitioned retail event tables."
+    },
+    {
+      "line_id": "CLD-LLM-03",
+      "category": "Third-Party LLM API Gateway",
+      "cost_center": "CC-220",
+      "budgeted_usd": 700000.0,
+      "actual_usd": 756000.0,
+      "variance_usd": 56000.0,
+      "variance_pct": 8.0,
+      "notes": "Modest token growth within normal seasonal forecast."
+    },
+    {
+      "line_id": "CLD-OBS-04",
+      "category": "Observability & Log Retention",
+      "cost_center": "CC-225",
+      "budgeted_usd": 500000.0,
+      "actual_usd": 500000.0,
+      "variance_usd": 0.0,
+      "variance_pct": 0.0,
+      "notes": "Fixed annual tier commitment."
+    }
+  ],
+  "revenue_recognition_items": [
+    {
+      "contract_id": "REV-MRA-01",
+      "customer_name": "Harborline Department Stores",
+      "contract_type": "Enterprise Retail Demand Forecasting SaaS",
+      "recognized_usd": 7400000.0,
+      "deferred_usd": 1850000.0,
+      "asc_606_five_step_verified": true,
+      "performance_obligations_met": true,
+      "signed_contract_on_file": true
+    },
+    {
+      "contract_id": "REV-MRA-02",
+      "customer_name": "Summit Sporting Goods Inc.",
+      "contract_type": "Omnichannel Pricing Analytics",
+      "recognized_usd": 5200000.0,
+      "deferred_usd": 1300000.0,
+      "asc_606_five_step_verified": true,
+      "performance_obligations_met": true,
+      "signed_contract_on_file": true
+    }
+  ],
+  "vendor_contracts": [
+    {
+      "vendor_id": "VND-MRA-01",
+      "vendor_name": "AetherCompute Cloud Inc.",
+      "service_category": "GPU Inference & Elastic Compute",
+      "annual_value_usd": 1760000.0,
+      "data_classification": "CONFIDENTIAL",
+      "soc2_type2_verified": true,
+      "soc2_report_expiry": "2027-03-31",
+      "dpa_signed": true
+    },
+    {
+      "vendor_id": "VND-MRA-02",
+      "vendor_name": "StrataData Warehouse LLC",
+      "service_category": "Analytical Data Warehouse",
+      "annual_value_usd": 1080000.0,
+      "data_classification": "CONFIDENTIAL",
+      "soc2_type2_verified": true,
+      "soc2_report_expiry": "2027-08-15",
+      "dpa_signed": true
+    },
+    {
+      "vendor_id": "VND-MRA-03",
+      "vendor_name": "VectorBridge AI Services",
+      "service_category": "Managed LLM Gateway",
+      "annual_value_usd": 756000.0,
+      "data_classification": "CONFIDENTIAL",
+      "soc2_type2_verified": true,
+      "soc2_report_expiry": "2027-01-31",
+      "dpa_signed": true
+    }
+  ],
+  "approvals": [
+    {
+      "record_id": "AMD-2026-Q3-09",
+      "description": "AetherCompute Cloud GPU Capacity Expansion Amendment",
+      "amount_usd": 660000.0,
+      "approvers": [
+        {"employee_id": "emp-eng-412", "role": "VP_ENGINEERING", "approved_at_utc": "2026-08-18T19:42:00Z"}
+      ]
+    },
+    {
+      "record_id": "PO-MRA-2026-410",
+      "description": "StrataData Warehouse Q3 Compute Tier",
+      "amount_usd": 1080000.0,
+      "approvers": [
+        {"employee_id": "emp-eng-412", "role": "VP_ENGINEERING", "approved_at_utc": "2026-07-02T13:10:00Z"},
+        {"employee_id": "emp-cfo-009", "role": "CFO", "approved_at_utc": "2026-07-02T17:25:00Z"}
+      ]
+    },
+    {
+      "record_id": "PO-MRA-2026-415",
+      "description": "VectorBridge AI Services Q3 Allocation",
+      "amount_usd": 756000.0,
+      "approvers": [
+        {"employee_id": "emp-eng-412", "role": "VP_ENGINEERING", "approved_at_utc": "2026-07-06T10:15:00Z"},
+        {"employee_id": "emp-fin-204", "role": "VP_FINANCE", "approved_at_utc": "2026-07-06T14:50:00Z"}
+      ]
+    }
+  ],
+  "treasury_controls": {
+    "bank_account_ref": "ACCT-SYNTH-MRA-AP-02",
+    "wire_transfers": [
+      {
+        "wire_id": "WIRE-MRA-2026-0702",
+        "amount_usd": 1080000.0,
+        "beneficiary": "StrataData Warehouse LLC",
+        "preparer_id": "emp-ap-305",
+        "approver_ids": ["emp-fin-204", "emp-cfo-009"],
+        "releaser_id": "emp-tres-310",
+        "override_used": false,
+        "executed_at_utc": "2026-07-08T16:00:00Z"
+      }
+    ]
+  },
+  "control_evidence": {
+    "bank_reconciliation_completed": true,
+    "max_unreconciled_age_days": 9,
+    "unreconciled_suspense_balance_usd": 0.0,
+    "journal_entry_audit_trail_complete": true,
+    "asc_606_memo_signed_by": "emp-ctrl-208"
+  }
+}

@@ -1,0 +1,12 @@
+project_id             = "gen-lang-client-0527325883"
+region                 = "us-central1"
+vertex_ai_location     = "global"
+gemini_model           = "gemini-3.8-flash"
+artifact_registry_repo = "enterprise-adk-a2a-mcp"
+bucket_name            = "enterprise-adk-docs-gen-lang-client-0527325883"
+bucket_force_destroy   = true
+compliance_secret_id   = "adk-compliance-policy-rules"
+
+financial_agent_image  = "us-central1-docker.pkg.dev/gen-lang-client-0527325883/enterprise-adk-a2a-mcp/adk-financial-agent:latest"
+compliance_agent_image = "us-central1-docker.pkg.dev/gen-lang-client-0527325883/enterprise-adk-a2a-mcp/adk-compliance-agent:latest"
+orchestrator_image     = "us-central1-docker.pkg.dev/gen-lang-client-0527325883/enterprise-adk-a2a-mcp/adk-orchestrator:latest"

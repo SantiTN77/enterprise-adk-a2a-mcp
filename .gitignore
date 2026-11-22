@@ -1,0 +1,68 @@
+# Environment & Secrets (NEVER commit real env or GCP credentials)
+.env
+.env.*
+!.env.example
+!**/.env.example
+*sa-key*.json
+*service-account*.json
+*service_account*.json
+*credentials*.json
+*.pem
+*.key
+
+# Vercel & Next.js (keeps web/.vercel isolated from parent workspace)
+.vercel
+.vercel/
+**/.vercel/
+.next/
+out/
+node_modules/
+pnpm-debug.log*
+package-lock.json
+
+# Terraform (track terraform.tfvars.example and .terraform.lock.hcl; never state or tfvars)
+.terraform/
+**/.terraform/
+.terraform.lock.hcl.bak
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+!terraform.tfvars.example
+!*.tfvars.example
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Python / uv / pytest
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+coverage/
+dist/
+build/
+*.egg-info/
+
+# Playwright / Test Artifacts
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# OS & Editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo

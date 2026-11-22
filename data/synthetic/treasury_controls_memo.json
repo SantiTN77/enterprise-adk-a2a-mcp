@@ -1,0 +1,159 @@
+{
+  "doc_id": "samples/treasury_controls_memo.json",
+  "scenario_id": "treasury_controls_memo",
+  "title": "Treasury Wire Controls & Vendor Exception Memo",
+  "description": "FY2026 Q3 treasury disbursement and vendor onboarding review for Helios FinTech Payments Inc. — contains critical Segregation of Duties self-approval breach, unverified/expired vendor SOC2 reports, missing dual approvals, +22.00% overrun, and aged unreconciled suspense.",
+  "default_prompt": "Perform a full financial risk and SOX/SOC2 audit evaluation of treasury wire controls and vendor compliance in samples/treasury_controls_memo.json.",
+  "company_name": "Helios FinTech Payments Inc.",
+  "fiscal_period": "FY2026-Q3",
+  "report_date": "2026-10-15",
+  "currency": "USD",
+  "document_type": "TREASURY_CONTROLS_MEMO",
+  "financial_summary": {
+    "revenue_usd": 9800000.0,
+    "operating_expenses_usd": 9450000.0,
+    "other_operating_expenses_usd": 6888000.0,
+    "operating_income_usd": 350000.0,
+    "total_assets_usd": 42000000.0,
+    "total_liabilities_usd": 35700000.0,
+    "operating_cash_flow_usd": -420000.0,
+    "budgeted_spend_usd": 2100000.0,
+    "actual_spend_usd": 2562000.0,
+    "budget_variance_usd": 462000.0,
+    "budget_variance_pct": 22.0,
+    "variance_waiver_approved": false
+  },
+  "unit_metrics": {
+    "wire_settlement_volume_usd": 148500000.0,
+    "manual_override_wire_count": 3,
+    "manual_override_value_usd": 1240000.0,
+    "unreconciled_suspense_balance_usd": 185000.0,
+    "liquidity_coverage_ratio": 1.08
+  },
+  "line_items": [
+    {
+      "line_id": "TRS-RAIL-01",
+      "category": "Core Clearing & Liquidity Operations",
+      "cost_center": "CC-701",
+      "budgeted_usd": 950000.0,
+      "actual_usd": 1140000.0,
+      "variance_usd": 190000.0,
+      "variance_pct": 20.0,
+      "notes": "Emergency intraday liquidity facility draw fees."
+    },
+    {
+      "line_id": "TRS-NR-02",
+      "category": "NovaRail Clearing Partners (Unvetted Payment Rail)",
+      "cost_center": "CC-704",
+      "budgeted_usd": 650000.0,
+      "actual_usd": 872000.0,
+      "variance_usd": 222000.0,
+      "variance_pct": 34.15,
+      "notes": "Expedited settlement routing added without vendor security sign-off."
+    },
+    {
+      "line_id": "TRS-FX-03",
+      "category": "Kestrel FX Settlement Fees",
+      "cost_center": "CC-708",
+      "budgeted_usd": 500000.0,
+      "actual_usd": 550000.0,
+      "variance_usd": 50000.0,
+      "variance_pct": 10.0,
+      "notes": "Spot FX spread overrun on weekend corridor batches."
+    }
+  ],
+  "revenue_recognition_items": [
+    {
+      "contract_id": "REV-HFP-01",
+      "customer_name": "Meridian Merchant Network",
+      "contract_type": "B2B Settlement Interchange",
+      "recognized_usd": 6100000.0,
+      "deferred_usd": 450000.0,
+      "asc_606_five_step_verified": true,
+      "performance_obligations_met": true,
+      "signed_contract_on_file": true
+    },
+    {
+      "contract_id": "REV-HFP-02",
+      "customer_name": "Coastal Payroll Clearing Inc.",
+      "contract_type": "ACH & Wire API Platform",
+      "recognized_usd": 3700000.0,
+      "deferred_usd": 280000.0,
+      "asc_606_five_step_verified": true,
+      "performance_obligations_met": true,
+      "signed_contract_on_file": true
+    }
+  ],
+  "vendor_contracts": [
+    {
+      "vendor_id": "VND-HFP-01",
+      "vendor_name": "NovaRail Clearing Partners",
+      "service_category": "Cross-Border Wire Clearing Rail",
+      "annual_value_usd": 872000.0,
+      "data_classification": "RESTRICTED_FINANCIAL",
+      "soc2_type2_verified": false,
+      "soc2_report_expiry": null,
+      "dpa_signed": false
+    },
+    {
+      "vendor_id": "VND-HFP-02",
+      "vendor_name": "Kestrel FX Settlement",
+      "service_category": "FX Liquidity & Settlement",
+      "annual_value_usd": 550000.0,
+      "data_classification": "RESTRICTED_FINANCIAL",
+      "soc2_type2_verified": false,
+      "soc2_report_expiry": "2026-03-31",
+      "dpa_signed": true
+    }
+  ],
+  "approvals": [
+    {
+      "record_id": "WIRE-2026-0891",
+      "description": "NovaRail Clearing Settlement Prefund (After-Hours Override)",
+      "amount_usd": 840000.0,
+      "approvers": [
+        {"employee_id": "emp-tres-701", "role": "TREASURY_MANAGER", "approved_at_utc": "2026-09-14T22:18:00Z"}
+      ]
+    },
+    {
+      "record_id": "WIRE-2026-0904",
+      "description": "Kestrel FX Corridor Margin Top-Up",
+      "amount_usd": 215000.0,
+      "approvers": [
+        {"employee_id": "emp-tres-702", "role": "TREASURY_ANALYST", "approved_at_utc": "2026-09-22T18:04:00Z"}
+      ]
+    }
+  ],
+  "treasury_controls": {
+    "bank_account_ref": "ACCT-SYNTH-HFP-SETTLE-09",
+    "wire_transfers": [
+      {
+        "wire_id": "WIRE-2026-0891",
+        "amount_usd": 840000.0,
+        "beneficiary": "NovaRail Clearing Partners",
+        "preparer_id": "emp-tres-701",
+        "approver_ids": ["emp-tres-701"],
+        "releaser_id": "emp-tres-701",
+        "override_used": true,
+        "executed_at_utc": "2026-09-14T22:21:00Z"
+      },
+      {
+        "wire_id": "WIRE-2026-0904",
+        "amount_usd": 215000.0,
+        "beneficiary": "Kestrel FX Settlement",
+        "preparer_id": "emp-tres-704",
+        "approver_ids": ["emp-tres-702"],
+        "releaser_id": "emp-tres-705",
+        "override_used": true,
+        "executed_at_utc": "2026-09-22T18:10:00Z"
+      }
+    ]
+  },
+  "control_evidence": {
+    "bank_reconciliation_completed": false,
+    "max_unreconciled_age_days": 47,
+    "unreconciled_suspense_balance_usd": 185000.0,
+    "journal_entry_audit_trail_complete": false,
+    "asc_606_memo_signed_by": "emp-ctrl-710"
+  }
+}

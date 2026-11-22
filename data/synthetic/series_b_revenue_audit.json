@@ -1,0 +1,182 @@
+{
+  "doc_id": "samples/series_b_revenue_audit.json",
+  "scenario_id": "series_b_revenue_audit",
+  "title": "Series B Q3 Revenue Recognition & Audit Readiness",
+  "description": "FY2026 Q3 ASC 606 revenue audit package for Northwind Cloud Robotics Inc. — cleanly compliant baseline with +1.43% spend variance, full dual approvals, verified vendor SOC2 reports, and intact SoD.",
+  "default_prompt": "Analyze financial ratios, ASC 606 revenue recognition quality, and SOX/SOC2 compliance controls for samples/series_b_revenue_audit.json.",
+  "company_name": "Northwind Cloud Robotics Inc.",
+  "fiscal_period": "FY2026-Q3",
+  "report_date": "2026-10-08",
+  "currency": "USD",
+  "document_type": "REVENUE_AUDIT_PACKAGE",
+  "financial_summary": {
+    "revenue_usd": 18450000.0,
+    "operating_expenses_usd": 14200000.0,
+    "other_operating_expenses_usd": 0.0,
+    "operating_income_usd": 4250000.0,
+    "total_assets_usd": 68500000.0,
+    "total_liabilities_usd": 19200000.0,
+    "operating_cash_flow_usd": 5100000.0,
+    "budgeted_spend_usd": 14000000.0,
+    "actual_spend_usd": 14200000.0,
+    "budget_variance_usd": 200000.0,
+    "budget_variance_pct": 1.43,
+    "variance_waiver_approved": false
+  },
+  "unit_metrics": {
+    "arr_usd": 73800000.0,
+    "deferred_revenue_usd": 9640000.0,
+    "active_enterprise_customers": 148,
+    "net_dollar_retention_pct": 124.5,
+    "gross_margin_pct": 78.4,
+    "cac_payback_months": 11.2
+  },
+  "line_items": [
+    {
+      "line_id": "ENG-CLOUD-01",
+      "category": "Cloud & Robotics Simulation Infrastructure",
+      "cost_center": "CC-410",
+      "budgeted_usd": 5600000.0,
+      "actual_usd": 5720000.0,
+      "variance_usd": 120000.0,
+      "variance_pct": 2.14,
+      "notes": "Minor telemetry ingestion growth aligned with 14 new enterprise deployments."
+    },
+    {
+      "line_id": "RD-PERSONNEL-02",
+      "category": "Autonomy R&D Engineering",
+      "cost_center": "CC-420",
+      "budgeted_usd": 3900000.0,
+      "actual_usd": 3950000.0,
+      "variance_usd": 50000.0,
+      "variance_pct": 1.28,
+      "notes": "Planned specialized contractor extension approved under Q3 hiring cap."
+    },
+    {
+      "line_id": "GTM-SALES-03",
+      "category": "Enterprise GTM & Customer Success",
+      "cost_center": "CC-510",
+      "budgeted_usd": 2800000.0,
+      "actual_usd": 2810000.0,
+      "variance_usd": 10000.0,
+      "variance_pct": 0.36,
+      "notes": "On budget across field engineering and onboarding teams."
+    },
+    {
+      "line_id": "GA-AUDIT-04",
+      "category": "Finance, Legal & External Audit Prep",
+      "cost_center": "CC-610",
+      "budgeted_usd": 1700000.0,
+      "actual_usd": 1720000.0,
+      "variance_usd": 20000.0,
+      "variance_pct": 1.18,
+      "notes": "Includes scheduled Big-4 Series B readiness testing."
+    }
+  ],
+  "revenue_recognition_items": [
+    {
+      "contract_id": "REV-2026-Q3-001",
+      "customer_name": "Apex Manufacturing Group",
+      "contract_type": "Multi-Year Fleet SaaS",
+      "recognized_usd": 5400000.0,
+      "deferred_usd": 2700000.0,
+      "asc_606_five_step_verified": true,
+      "performance_obligations_met": true,
+      "signed_contract_on_file": true
+    },
+    {
+      "contract_id": "REV-2026-Q3-002",
+      "customer_name": "BlueRidge Logistics Corp.",
+      "contract_type": "Warehouse Automation Subscription",
+      "recognized_usd": 4850000.0,
+      "deferred_usd": 2425000.0,
+      "asc_606_five_step_verified": true,
+      "performance_obligations_met": true,
+      "signed_contract_on_file": true
+    },
+    {
+      "contract_id": "REV-2026-Q3-003",
+      "customer_name": "Pacific Cold-Chain Partners",
+      "contract_type": "Telemetry & Fleet Control SaaS",
+      "recognized_usd": 4200000.0,
+      "deferred_usd": 2515000.0,
+      "asc_606_five_step_verified": true,
+      "performance_obligations_met": true,
+      "signed_contract_on_file": true
+    },
+    {
+      "contract_id": "REV-2026-Q3-004",
+      "customer_name": "Crestline Industrial Supply",
+      "contract_type": "Robotics API Enterprise License",
+      "recognized_usd": 4000000.0,
+      "deferred_usd": 2000000.0,
+      "asc_606_five_step_verified": true,
+      "performance_obligations_met": true,
+      "signed_contract_on_file": true
+    }
+  ],
+  "vendor_contracts": [
+    {
+      "vendor_id": "VND-NWR-01",
+      "vendor_name": "Veritas Ledger Systems Ltd.",
+      "service_category": "Automated Sub-ledger & ASC 606 Engine",
+      "annual_value_usd": 340000.0,
+      "data_classification": "CONFIDENTIAL",
+      "soc2_type2_verified": true,
+      "soc2_report_expiry": "2027-06-30",
+      "dpa_signed": true
+    },
+    {
+      "vendor_id": "VND-NWR-02",
+      "vendor_name": "CloudPulse Billing Corp.",
+      "service_category": "Metered Usage & Invoice Orchestration",
+      "annual_value_usd": 215000.0,
+      "data_classification": "CONFIDENTIAL",
+      "soc2_type2_verified": true,
+      "soc2_report_expiry": "2027-09-15",
+      "dpa_signed": true
+    }
+  ],
+  "approvals": [
+    {
+      "record_id": "PO-NWR-2026-301",
+      "description": "Veritas Ledger Systems Annual Renewal",
+      "amount_usd": 340000.0,
+      "approvers": [
+        {"employee_id": "emp-ctrl-201", "role": "CONTROLLER", "approved_at_utc": "2026-07-04T14:15:00Z"},
+        {"employee_id": "emp-cfo-001", "role": "CFO", "approved_at_utc": "2026-07-04T16:40:00Z"}
+      ]
+    },
+    {
+      "record_id": "PO-NWR-2026-318",
+      "description": "CloudPulse Billing Q3 Commitment",
+      "amount_usd": 215000.0,
+      "approvers": [
+        {"employee_id": "emp-eng-112", "role": "VP_ENGINEERING", "approved_at_utc": "2026-07-19T11:05:00Z"},
+        {"employee_id": "emp-vpfin-003", "role": "VP_FINANCE", "approved_at_utc": "2026-07-19T15:22:00Z"}
+      ]
+    }
+  ],
+  "treasury_controls": {
+    "bank_account_ref": "ACCT-SYNTH-NWR-OPS-01",
+    "wire_transfers": [
+      {
+        "wire_id": "WIRE-NWR-2026-0412",
+        "amount_usd": 340000.0,
+        "beneficiary": "Veritas Ledger Systems Ltd.",
+        "preparer_id": "emp-tres-301",
+        "approver_ids": ["emp-ctrl-201", "emp-cfo-001"],
+        "releaser_id": "emp-tres-302",
+        "override_used": false,
+        "executed_at_utc": "2026-07-05T15:00:00Z"
+      }
+    ]
+  },
+  "control_evidence": {
+    "bank_reconciliation_completed": true,
+    "max_unreconciled_age_days": 4,
+    "unreconciled_suspense_balance_usd": 0.0,
+    "journal_entry_audit_trail_complete": true,
+    "asc_606_memo_signed_by": "emp-ctrl-201"
+  }
+}
