@@ -1,6 +1,14 @@
 'use client';
 
-import { RefreshCw, ShieldCheck, ShieldAlert, Cpu } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
+
+function GithubMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 16 16" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+    </svg>
+  );
+}
 import type { HealthResponse } from '@/lib/types';
 
 interface HeaderBarProps {
@@ -11,13 +19,7 @@ interface HeaderBarProps {
   onTogglePosture: () => void;
 }
 
-export function HeaderBar({
-  health,
-  healthLoading,
-  onRefreshHealth,
-  postureExpanded,
-  onTogglePosture,
-}: HeaderBarProps) {
+export function HeaderBar({ health, healthLoading, onRefreshHealth, postureExpanded, onTogglePosture }: HeaderBarProps) {
   const isOk = health?.status === 'ok';
   const authModeLabel =
     health?.bff.auth_mode === 'oidc-sa'
@@ -29,39 +31,18 @@ export function HeaderBar({
           : 'Checking…';
 
   return (
-    <header className="border-b border-slate-800 bg-[#0D1320]/95 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-        <div className="flex items-start gap-3.5">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-sky-500/30 bg-sky-500/10 text-sky-300">
-            <Cpu className="h-6 w-6" aria-hidden="true" />
-          </div>
-          <div>
-            <h1 className="text-xl font-semibold tracking-tight text-slate-50 sm:text-2xl">
-              Enterprise Multi-Agent Risk &amp; Compliance Console
-            </h1>
-            <p className="mt-1 text-sm text-slate-300">
-              Google ADK 2.15 · A2A v1.0 · Stdio MCP 2.3.0 · Vertex AI{' '}
-              <span className="font-mono text-sky-300">gemini-3.8-flash</span>{' '}
-              <span className="text-slate-400">(global)</span>
-            </p>
-          </div>
-        </div>
+    <header className="sticky top-0 z-30 border-b border-line bg-paper/85 backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-4 px-5 sm:px-8">
+        <h1 className="truncate text-[15px] font-medium tracking-tight">
+          Multi-Agent Risk <span className="font-serif text-lg italic text-accent">&amp;</span> Compliance Console
+        </h1>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <div
-            role="status"
-            aria-live="polite"
-            className={`inline-flex min-h-[48px] items-center gap-2.5 rounded-lg border px-3.5 py-2 text-sm font-medium ${
-              isOk
-                ? 'border-emerald-500/40 bg-emerald-950/60 text-emerald-200'
-                : 'border-amber-500/40 bg-amber-950/60 text-amber-200'
-            }`}
-          >
-            {isOk ? (
-              <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-300" aria-hidden="true" />
-            ) : (
-              <ShieldAlert className="h-4 w-4 shrink-0 text-amber-300" aria-hidden="true" />
-            )}
+        <div className="flex items-center gap-2 text-xs sm:gap-3">
+          <div role="status" aria-live="polite" className="hidden items-center gap-2 text-ink-muted md:inline-flex">
+            <span className="relative flex h-2 w-2">
+              {isOk ? <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ok/50" /> : null}
+              <span className={`relative inline-flex h-2 w-2 rounded-full ${isOk ? 'bg-ok' : 'bg-warn'}`} />
+            </span>
             <span>
               BFF: {isOk ? 'Connected' : health ? 'Degraded' : 'Checking'} · {authModeLabel}
             </span>
@@ -72,13 +53,9 @@ export function HeaderBar({
             onClick={onRefreshHealth}
             disabled={healthLoading}
             aria-label="Refresh BFF and Cloud Run orchestrator health status"
-            className="inline-flex min-h-[48px] items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-100 transition-colors hover:border-slate-500 hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#090D16] disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-line-strong text-ink transition-colors hover:border-ink disabled:opacity-60"
           >
-            <RefreshCw
-              className={`h-4 w-4 ${healthLoading ? 'animate-spin motion-reduce:animate-none' : ''}`}
-              aria-hidden="true"
-            />
-            <span>Refresh Health</span>
+            <RefreshCw className={`h-3.5 w-3.5 ${healthLoading ? 'animate-spin motion-reduce:animate-none' : ''}`} aria-hidden="true" />
           </button>
 
           <button
@@ -86,11 +63,19 @@ export function HeaderBar({
             onClick={onTogglePosture}
             aria-expanded={postureExpanded}
             aria-controls="security-posture-drawer"
-            className="inline-flex min-h-[48px] items-center gap-2 rounded-lg border border-sky-500/40 bg-sky-950/50 px-4 py-2 text-sm font-medium text-sky-100 transition-colors hover:border-sky-400 hover:bg-sky-900/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#090D16] motion-reduce:transition-none"
+            className="hidden rounded-full border border-line-strong px-3 py-1.5 text-ink transition-colors hover:border-ink sm:inline-flex"
           >
-            <ShieldCheck className="h-4 w-4 text-sky-300" aria-hidden="true" />
-            <span>{postureExpanded ? 'Hide Security Posture' : 'Architecture & Security Posture'}</span>
+            {postureExpanded ? 'Hide Security Posture' : 'Architecture & Security Posture'}
           </button>
+
+          <a
+            href="https://github.com/SantiTN77/enterprise-adk-a2a-mcp"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 text-paper"
+          >
+            <GithubMark className="h-3.5 w-3.5" /> Source
+          </a>
         </div>
       </div>
     </header>

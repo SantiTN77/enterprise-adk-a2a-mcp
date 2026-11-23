@@ -1,13 +1,16 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition } from 'react';
-import { AlertCircle, ChevronDown, ChevronUp, FileText, Play, Sparkles } from 'lucide-react';
+import { motion, useReducedMotion } from 'motion/react';
+import { AlertCircle, ArrowRight, ChevronDown, CornerDownLeft } from 'lucide-react';
 import { DEFAULT_SCENARIOS, SCENARIO_UI_META } from '@/lib/scenarios';
 import type { AnalyzeResponse, HealthResponse, ScenarioItem, ScenariosResponse } from '@/lib/types';
 import { HeaderBar } from './HeaderBar';
 import { SecurityPosturePanel } from './SecurityPosturePanel';
 import { ExecutionTracePanel } from './ExecutionTracePanel';
 import { ExecutiveReportPanel } from './ExecutiveReportPanel';
+
+const EASE = [0.16, 1, 0.3, 1] as const;
 
 async function fetchStatusAndScenarios(): Promise<{
   health: HealthResponse | null;
@@ -168,9 +171,14 @@ export function AgentConsole() {
   }
 
   const busy = isRunning || isPending;
+  const reduce = useReducedMotion();
+  const rise = (d = 0) =>
+    reduce
+      ? {}
+      : { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.9, ease: EASE, delay: d } };
 
   return (
-    <div className="min-h-screen bg-[#090D16] text-slate-100">
+    <div className="min-h-screen">
       <HeaderBar
         health={health}
         healthLoading={healthLoading}
@@ -179,134 +187,134 @@ export function AgentConsole() {
         onTogglePosture={() => setPostureExpanded((prev) => !prev)}
       />
 
-      <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
-        <SecurityPosturePanel
-          expanded={postureExpanded}
-          health={health}
-          posture={report?.security_posture ?? null}
-        />
+      <main className="mx-auto max-w-[1280px] space-y-20 px-5 pb-24 sm:px-8">
+        {/* intro */}
+        <section className="grid grid-cols-12 gap-6 pt-12 md:pt-16">
+          <motion.div {...rise()} className="col-span-12 lg:col-span-8">
+            <p className="eyebrow">Google ADK 2.15 · A2A v1.0 · Stdio MCP 2.3.0 · Vertex AI gemini-3.8-flash</p>
+            <h2 className="mt-4 text-balance text-4xl font-medium leading-[1.02] tracking-[-0.035em] md:text-6xl">
+              One orchestrator. Specialist agents. <span className="font-serif italic text-accent">Zero public endpoints.</span>
+            </h2>
+          </motion.div>
+          <motion.p {...rise(0.1)} className="col-span-12 self-end text-pretty text-[15px] leading-relaxed text-ink-muted lg:col-span-4">
+            A Google ADK orchestrator on private Cloud Run delegates over A2A to a financial agent and a compliance agent.
+            Each one reads evidence through its own MCP tools and the orchestrator returns a single, auditable report.
+          </motion.p>
+        </section>
 
-        {/* Scenario Selection & Prompt Workbench */}
-        <section
-          aria-labelledby="scenarios-heading"
-          className="rounded-2xl border border-slate-800 bg-[#111827] p-5 shadow-lg"
-        >
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2.5">
-              <Sparkles className="h-5 w-5 text-sky-300" aria-hidden="true" />
-              <h2 id="scenarios-heading" className="text-lg font-semibold text-slate-50">
+        <SecurityPosturePanel expanded={postureExpanded} health={health} posture={report?.security_posture ?? null} />
+
+        {/* scenarios */}
+        <section aria-labelledby="scenarios-heading" data-demo="scenarios">
+          <div className="flex flex-wrap items-end justify-between gap-3 border-t border-ink pt-5">
+            <div>
+              <p className="eyebrow">Synthetic enterprise cases</p>
+              <h2 id="scenarios-heading" className="mt-2 text-2xl font-medium tracking-tight md:text-3xl">
                 1-Click Synthetic Enterprise Scenarios
               </h2>
             </div>
-            <p className="text-xs text-slate-400">
-              Backed by GCS samples &amp; Secret Manager policy{' '}
-              <code className="font-mono text-slate-300">adk-compliance-policy-rules</code>
+            <p className="text-xs text-ink-muted">
+              Evidence in GCS · policy in Secret Manager{' '}
+              <code className="font-mono text-ink">adk-compliance-policy-rules</code>
             </p>
           </div>
 
-          <div className="mt-4 grid gap-4 lg:grid-cols-3">
-            {scenarios.map((scenario) => {
+          <div className="mt-8 grid gap-4 lg:grid-cols-3">
+            {scenarios.map((scenario, idx) => {
               const isSelected = scenario.id === activeScenario.id;
               const uiMeta = SCENARIO_UI_META[scenario.id];
-              const toneClasses =
-                uiMeta?.tone === 'success'
-                  ? 'border-emerald-500/30 bg-emerald-950/50 text-emerald-200'
-                  : uiMeta?.tone === 'critical'
-                    ? 'border-red-500/30 bg-red-950/50 text-red-200'
-                    : 'border-amber-500/30 bg-amber-950/50 text-amber-200';
-
+              const dot = uiMeta?.tone === 'success' ? 'bg-ok' : uiMeta?.tone === 'critical' ? 'bg-bad' : 'bg-warn';
+              const txt = uiMeta?.tone === 'success' ? 'text-ok' : uiMeta?.tone === 'critical' ? 'text-bad' : 'text-warn';
               return (
-                <div
+                <motion.div
                   key={scenario.id}
+                  {...rise(0.05 + idx * 0.07)}
                   data-testid={`scenario-card-${scenario.id}`}
-                  className={`flex flex-col justify-between rounded-xl border p-4 transition-colors motion-reduce:transition-none ${
+                  className={`relative flex flex-col justify-between rounded-[18px] border bg-card p-5 transition-all duration-500 ${
                     isSelected
-                      ? 'border-sky-400 bg-sky-950/25 shadow-md shadow-sky-950/40'
-                      : 'border-slate-800 bg-[#0B101B] hover:border-slate-700'
+                      ? 'border-ink shadow-[0_24px_48px_-32px_rgba(21,20,18,0.5)]'
+                      : 'border-line hover:-translate-y-0.5 hover:border-line-strong'
                   }`}
                 >
                   <div>
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="text-base font-semibold text-slate-50">{scenario.title}</h3>
-                    </div>
-
-                    {uiMeta ? (
-                      <p className="mt-1 text-xs font-medium text-slate-400">{uiMeta.company}</p>
-                    ) : null}
-
-                    {uiMeta ? (
-                      <div className="mt-2">
-                        <span
-                          className={`inline-block rounded-full border px-2.5 py-0.5 text-xs font-semibold ${toneClasses}`}
-                        >
-                          {uiMeta.expectedSignal}
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-[11px] text-ink-faint">{String(idx + 1).padStart(2, '0')}</span>
+                      {uiMeta ? (
+                        <span className={`inline-flex items-center gap-1.5 font-mono text-[10.5px] ${txt}`}>
+                          <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
+                          {uiMeta.expectedSignal.split(' · ')[0]}
                         </span>
-                      </div>
+                      ) : null}
+                    </div>
+                    <h3 className="mt-4 text-lg font-medium leading-snug tracking-tight">{scenario.title}</h3>
+                    {uiMeta ? <p className="mt-1 text-xs text-ink-muted">{uiMeta.company}</p> : null}
+                    {uiMeta ? (
+                      <p className={`mt-3 text-xs ${txt}`}>{uiMeta.expectedSignal.split(' · ').slice(1).join(' · ')}</p>
                     ) : null}
-
-                    <p className="mt-3 text-sm leading-relaxed text-slate-300">{scenario.description}</p>
-                    <p className="mt-2 font-mono text-xs text-slate-400">{scenario.doc_id}</p>
+                    <p className="mt-3 text-sm leading-relaxed text-ink-soft">{scenario.description}</p>
+                    <p className="mt-3 font-mono text-[11px] text-ink-faint">{scenario.doc_id}</p>
                   </div>
 
-                  <div className="mt-4 flex flex-wrap gap-2 pt-2">
+                  <div className="mt-5 flex gap-2 border-t border-line pt-4">
                     <button
                       type="button"
                       onClick={() => handleSelectScenario(scenario)}
                       aria-pressed={isSelected}
-                      className={`min-h-[48px] flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B101B] motion-reduce:transition-none ${
-                        isSelected
-                          ? 'border-sky-400 bg-sky-500/20 text-sky-100'
-                          : 'border-slate-700 bg-slate-900 text-slate-200 hover:border-slate-500'
+                      className={`flex-1 rounded-full border px-3 py-2 text-sm transition-colors ${
+                        isSelected ? 'border-ink bg-paper-deep text-ink' : 'border-line-strong text-ink-soft hover:border-ink'
                       }`}
                     >
                       {isSelected ? 'Selected' : 'Select'}
                     </button>
-
                     <button
                       type="button"
                       onClick={() => void executeAnalysis(scenario)}
                       disabled={busy}
                       data-testid={`run-scenario-${scenario.id}`}
-                      className="inline-flex min-h-[48px] items-center justify-center gap-1.5 rounded-lg bg-sky-500 px-3.5 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-sky-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B101B] disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
+                      className="group inline-flex items-center justify-center gap-1.5 rounded-full bg-ink px-4 py-2 text-sm font-medium text-paper transition-transform duration-300 hover:-translate-y-px disabled:cursor-wait disabled:opacity-60"
                     >
-                      <Play className="h-4 w-4" aria-hidden="true" />
-                      <span>Run 1-Click</span>
+                      Run 1-Click
+                      <ArrowRight
+                        className="h-3.5 w-3.5 transition-transform duration-500 group-hover:translate-x-0.5"
+                        aria-hidden="true"
+                      />
                     </button>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
 
-          <form onSubmit={handleFormSubmit} noValidate className="mt-6 space-y-4 border-t border-slate-800 pt-5">
+          <form onSubmit={handleFormSubmit} noValidate className="card mt-6 p-5 sm:p-6">
             <div className="grid gap-4 sm:grid-cols-3">
               <div>
-                <label htmlFor="scenario-selector" className="block text-sm font-medium text-slate-200">
-                  Active Scenario
+                <label htmlFor="scenario-selector" className="eyebrow block">
+                  Active scenario
                 </label>
-                <select
-                  id="scenario-selector"
-                  name="scenario_id"
-                  data-testid="scenario-select"
-                  value={activeScenario.id}
-                  onChange={(e) => {
-                    const matched = scenarios.find((s) => s.id === e.target.value);
-                    if (matched) {
-                      handleSelectScenario(matched);
-                    }
-                  }}
-                  className="mt-1.5 w-full min-h-[44px] rounded-xl border border-slate-700 bg-[#0B101B] px-3 py-2 text-sm text-slate-100 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400/50"
-                >
-                  {scenarios.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.title}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative mt-2">
+                  <select
+                    id="scenario-selector"
+                    name="scenario_id"
+                    data-testid="scenario-select"
+                    value={activeScenario.id}
+                    onChange={(e) => {
+                      const matched = scenarios.find((s) => s.id === e.target.value);
+                      if (matched) handleSelectScenario(matched);
+                    }}
+                    className="w-full appearance-none rounded-xl border border-line bg-paper/60 px-3.5 py-2.5 pr-9 text-sm focus:border-ink focus:outline-none"
+                  >
+                    {scenarios.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.title}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted" />
+                </div>
               </div>
               <div className="sm:col-span-2">
-                <label htmlFor="analysis-prompt" className="block text-sm font-medium text-slate-200">
-                  Orchestrator Prompt ({activeScenario.id})
+                <label htmlFor="analysis-prompt" className="eyebrow block">
+                  Orchestrator prompt · {activeScenario.id}
                 </label>
                 <textarea
                   id="analysis-prompt"
@@ -318,41 +326,35 @@ export function AgentConsole() {
                   required
                   minLength={5}
                   maxLength={4000}
-                  className="mt-1.5 w-full rounded-xl border border-slate-700 bg-[#0B101B] px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400/50"
+                  className="mt-2 w-full resize-none rounded-xl border border-line bg-paper/60 px-3.5 py-2.5 text-[15px] leading-relaxed focus:border-ink focus:outline-none"
                 />
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex flex-wrap items-center gap-4">
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-4">
+              <div className="flex flex-wrap items-center gap-3 text-sm">
                 <button
                   type="button"
                   onClick={() => setShowCustomDoc((prev) => !prev)}
                   aria-expanded={showCustomDoc}
                   aria-controls="custom-document-panel"
-                  className="inline-flex min-h-[48px] items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-3.5 py-2 text-sm font-medium text-slate-200 hover:border-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+                  className="inline-flex items-center gap-2 rounded-full border border-line-strong px-3.5 py-2 transition-colors hover:border-ink"
                 >
-                  <FileText className="h-4 w-4 text-sky-300" aria-hidden="true" />
-                  <span>Optional Ad-Hoc Document Text</span>
-                  {showCustomDoc ? (
-                    <ChevronUp className="h-4 w-4" aria-hidden="true" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4" aria-hidden="true" />
-                  )}
+                  Optional Ad-Hoc Document Text
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform duration-500 ${showCustomDoc ? 'rotate-180' : ''}`}
+                    aria-hidden="true"
+                  />
                 </button>
-
-                <label
-                  htmlFor="persist-report-toggle"
-                  className="inline-flex min-h-[48px] cursor-pointer items-center gap-2.5 rounded-lg border border-slate-800 bg-[#0B101B] px-3.5 py-2 text-sm text-slate-200"
-                >
+                <label htmlFor="persist-report-toggle" className="inline-flex cursor-pointer items-center gap-2.5 text-ink-soft">
                   <input
                     id="persist-report-toggle"
                     type="checkbox"
                     checked={persistReport}
                     onChange={(e) => setPersistReport(e.target.checked)}
-                    className="h-4 w-4 rounded border-slate-600 bg-slate-900 text-sky-400 focus:ring-2 focus:ring-sky-400"
+                    className="h-4 w-4 rounded accent-[#151412]"
                   />
-                  <span>Persist Report to GCS</span>
+                  Persist report to GCS
                 </label>
               </div>
 
@@ -360,54 +362,51 @@ export function AgentConsole() {
                 type="submit"
                 disabled={busy}
                 data-testid="analyze-submit"
-                className="inline-flex min-h-[48px] items-center gap-2 rounded-xl bg-emerald-400 px-5 py-2.5 text-sm font-bold text-slate-950 transition-colors hover:bg-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#111827] disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
+                className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-paper transition-transform duration-300 hover:-translate-y-px disabled:cursor-wait disabled:opacity-70"
               >
-                <Play className="h-4 w-4" aria-hidden="true" />
-                <span>{busy ? 'Running A2A + MCP Agents…' : 'Run Multi-Agent Analysis'}</span>
+                {busy ? 'Running A2A + MCP Agents…' : 'Run Multi-Agent Analysis'}
+                <CornerDownLeft className="h-3.5 w-3.5 opacity-80" aria-hidden="true" />
               </button>
             </div>
 
-            <div
-              id="custom-document-panel"
-              className={showCustomDoc ? 'rounded-xl border border-slate-800 bg-[#0B101B] p-4' : 'rounded-xl border border-slate-800/70 bg-[#0B101B] p-3'}
-            >
-              <label htmlFor="custom-document-text" className="block text-xs font-medium text-slate-300">
-                Custom Document JSON / Memo Text (Optional override sent to orchestrator)
+            <div id="custom-document-panel" className={showCustomDoc ? 'mt-4' : 'hidden'}>
+              <label htmlFor="custom-document-text" className="eyebrow block">
+                Custom document JSON / memo text (optional override)
               </label>
               <textarea
                 id="custom-document-text"
                 name="document_text"
                 data-testid="adhoc-doc-input"
-                rows={showCustomDoc ? 5 : 2}
+                rows={5}
                 value={documentText}
                 onChange={(e) => setDocumentText(e.target.value)}
-                placeholder="Paste custom financial statement JSON or compliance memo text for ad-hoc analysis..."
-                className="mt-1.5 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-xs text-slate-100 placeholder-slate-500 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400/50"
+                placeholder="Paste a financial statement JSON or a compliance memo for ad-hoc analysis…"
+                className="mt-2 w-full rounded-xl border border-line bg-paper/60 px-3.5 py-2.5 font-mono text-xs focus:border-ink focus:outline-none"
               />
             </div>
           </form>
 
           {errorMessage ? (
-            <div
-              role="alert"
-              className="mt-4 flex items-start gap-2.5 rounded-xl border border-red-500/40 bg-red-950/50 p-4 text-sm text-red-100"
-            >
-              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-300" aria-hidden="true" />
+            <div role="alert" className="mt-4 flex items-start gap-2.5 rounded-xl border border-bad/30 bg-bad-soft p-4 text-sm text-bad">
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
               <div>
-                <p className="font-semibold">Execution Error</p>
-                <p className="mt-0.5 text-red-200">{errorMessage}</p>
+                <p className="font-medium">Execution Error</p>
+                <p className="mt-0.5">{errorMessage}</p>
               </div>
             </div>
           ) : null}
         </section>
 
-        <ExecutionTracePanel
-          trace={report?.a2a_trace ?? []}
-          provenance={report?.gcp_provenance ?? null}
-          isPending={busy}
-        />
+        <ExecutionTracePanel trace={report?.a2a_trace ?? []} provenance={report?.gcp_provenance ?? null} isPending={busy} />
 
-        {report ? <ExecutiveReportPanel report={report} /> : null}
+        {report && !busy ? <ExecutiveReportPanel report={report} /> : null}
+
+        <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-6 font-mono text-[11px] text-ink-muted">
+          <span>Built by Daniel Tafur · AI Agent Engineer</span>
+          <a href="https://danieltafur.vercel.app" target="_blank" rel="noopener noreferrer" className="hover:text-ink">
+            danieltafur.vercel.app ↗
+          </a>
+        </footer>
       </main>
     </div>
   );

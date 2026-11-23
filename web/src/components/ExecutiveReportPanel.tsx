@@ -1,60 +1,25 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  AlertOctagon,
-  AlertTriangle,
-  CheckCircle2,
-  ClipboardCheck,
-  Code2,
-  Copy,
-  FileSpreadsheet,
-  ListChecks,
-  ShieldAlert,
-  ShieldCheck,
-} from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { Check, ClipboardCheck, Code2, Copy } from 'lucide-react';
 import type { AnalyzeResponse, RiskRating } from '@/lib/types';
 import { formatMetricLabel, formatMetricValue, normalizeFindingItem } from './finding-utils';
 
-interface ExecutiveReportPanelProps {
-  report: AnalyzeResponse;
-}
+const EASE = [0.16, 1, 0.3, 1] as const;
 
-function getRiskBadgeConfig(rating: RiskRating) {
-  switch (rating) {
-    case 'LOW':
-      return {
-        label: 'LOW RISK',
-        classes: 'border-emerald-500/50 bg-emerald-950/70 text-emerald-200',
-        Icon: ShieldCheck,
-      };
-    case 'MEDIUM':
-      return {
-        label: 'MEDIUM RISK',
-        classes: 'border-sky-500/50 bg-sky-950/70 text-sky-200',
-        Icon: AlertTriangle,
-      };
-    case 'HIGH':
-      return {
-        label: 'HIGH RISK',
-        classes: 'border-amber-500/50 bg-amber-950/70 text-amber-200',
-        Icon: ShieldAlert,
-      };
-    case 'CRITICAL':
-      return {
-        label: 'CRITICAL RISK',
-        classes: 'border-red-500/50 bg-red-950/70 text-red-200',
-        Icon: AlertOctagon,
-      };
-  }
-}
+const RISK: Record<RiskRating, { label: string; bg: string; text: string; level: number }> = {
+  LOW: { label: 'LOW RISK', bg: 'bg-ok', text: 'text-ok', level: 1 },
+  MEDIUM: { label: 'MEDIUM RISK', bg: 'bg-ink-muted', text: 'text-ink-muted', level: 2 },
+  HIGH: { label: 'HIGH RISK', bg: 'bg-warn', text: 'text-warn', level: 3 },
+  CRITICAL: { label: 'CRITICAL RISK', bg: 'bg-bad', text: 'text-bad', level: 4 },
+};
 
-export function ExecutiveReportPanel({ report }: ExecutiveReportPanelProps) {
+export function ExecutiveReportPanel({ report }: { report: AnalyzeResponse }) {
+  const reduce = useReducedMotion();
   const [showRawJson, setShowRawJson] = useState(false);
   const [copied, setCopied] = useState(false);
-
-  const riskConfig = getRiskBadgeConfig(report.overall_risk_rating);
-  const RiskIcon = riskConfig.Icon;
+  const risk = RISK[report.overall_risk_rating];
   const metricEntries = Object.entries(report.financial_analysis.key_metrics ?? {});
 
   async function handleCopyJson() {
@@ -67,257 +32,229 @@ export function ExecutiveReportPanel({ report }: ExecutiveReportPanelProps) {
     }
   }
 
+  const rise = (d = 0) =>
+    reduce ? {} : { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.8, ease: EASE, delay: d } };
+
   return (
-    <section
-      aria-labelledby="executive-report-heading"
-      className="rounded-2xl border border-slate-800 bg-[#111827] p-5 shadow-lg"
-    >
-      <div className="flex flex-col gap-4 border-b border-slate-800 pb-4 sm:flex-row sm:items-start sm:justify-between">
+    <section aria-labelledby="executive-report-heading" data-demo="report">
+      <div className="flex flex-col gap-4 border-t border-ink pt-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <div className="flex flex-wrap items-center gap-3">
-            <h2 id="executive-report-heading" className="text-lg font-semibold text-slate-50">
-              Executive Risk &amp; Compliance Report
-            </h2>
-            <span
-              data-testid="risk-rating-badge"
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold tracking-wide ${riskConfig.classes}`}
-            >
-              <RiskIcon className="h-4 w-4" aria-hidden="true" />
-              <span>{riskConfig.label}</span>
-            </span>
-          </div>
-          <p className="mt-1.5 font-mono text-xs text-slate-400">
-            Run: {report.run_id} · Scenario: {report.scenario_id} · Doc: {report.doc_id} ·{' '}
-            {report.timestamp_utc}
+          <p className="eyebrow">Synthesised by the orchestrator</p>
+          <h2 id="executive-report-heading" className="mt-2 text-2xl font-medium tracking-tight md:text-3xl">
+            Executive Risk &amp; Compliance Report
+          </h2>
+          <p className="mt-2 font-mono text-[11px] text-ink-muted">
+            {report.run_id} · {report.scenario_id} · {report.doc_id} · {report.timestamp_utc}
           </p>
         </div>
-
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 text-sm">
           <button
             type="button"
-            onClick={() => setShowRawJson((prev) => !prev)}
+            onClick={() => setShowRawJson((p) => !p)}
             aria-expanded={showRawJson}
             aria-controls="raw-json-panel"
-            className="inline-flex min-h-[48px] items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-3.5 py-2 text-sm font-medium text-slate-100 transition-colors hover:border-slate-500 hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#111827] motion-reduce:transition-none"
+            className="inline-flex items-center gap-2 rounded-full border border-line-strong px-4 py-2 transition-colors hover:border-ink"
           >
-            <Code2 className="h-4 w-4 text-sky-300" aria-hidden="true" />
-            <span>{showRawJson ? 'Hide Raw JSON' : 'Show Raw JSON'}</span>
+            <Code2 className="h-4 w-4" aria-hidden="true" />
+            {showRawJson ? 'Hide Raw JSON' : 'Show Raw JSON'}
           </button>
-
           <button
             type="button"
             onClick={handleCopyJson}
             aria-label="Copy full analysis JSON report to clipboard"
-            className="inline-flex min-h-[48px] items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-3.5 py-2 text-sm font-medium text-slate-100 transition-colors hover:border-slate-500 hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#111827] motion-reduce:transition-none"
+            className="inline-flex items-center gap-2 rounded-full border border-line-strong px-4 py-2 transition-colors hover:border-ink"
           >
-            {copied ? (
-              <ClipboardCheck className="h-4 w-4 text-emerald-300" aria-hidden="true" />
-            ) : (
-              <Copy className="h-4 w-4 text-slate-300" aria-hidden="true" />
-            )}
-            <span>{copied ? 'Copied JSON' : 'Copy JSON'}</span>
+            {copied ? <ClipboardCheck className="h-4 w-4 text-ok" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
+            {copied ? 'Copied JSON' : 'Copy JSON'}
           </button>
         </div>
       </div>
 
-      <div className="mt-4 rounded-xl border border-slate-800 bg-[#0B101B] p-4">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-sky-300">Executive Summary</h3>
-        <p className="mt-2 text-sm leading-relaxed text-slate-100">{report.executive_summary}</p>
-      </div>
-
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
-        {/* Financial Analysis Card */}
-        <article className="rounded-xl border border-slate-800 bg-[#0B101B] p-4">
-          <div className="flex items-center gap-2">
-            <FileSpreadsheet className="h-5 w-5 text-sky-300" aria-hidden="true" />
-            <h3 className="text-base font-semibold text-slate-50">Financial Analysis</h3>
+      {/* verdict */}
+      <motion.div {...rise()} className="mt-8 grid gap-8 lg:grid-cols-12">
+        <div className="lg:col-span-4">
+          <span
+            data-testid="risk-rating-badge"
+            className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold tracking-wide text-paper ${risk.bg}`}
+          >
+            {risk.label}
+          </span>
+          <div className="mt-5 flex gap-1.5" aria-hidden="true">
+            {[1, 2, 3, 4].map((n) => (
+              <motion.span
+                key={n}
+                initial={reduce ? false : { scaleY: 0.2, opacity: 0.3 }}
+                animate={{ scaleY: 1, opacity: 1 }}
+                transition={{ duration: 0.6, ease: EASE, delay: 0.2 + n * 0.08 }}
+                className={`h-10 flex-1 origin-bottom rounded-sm ${n <= risk.level ? risk.bg : 'bg-line'}`}
+              />
+            ))}
           </div>
-          <p className="mt-2 text-sm leading-relaxed text-slate-300">{report.financial_analysis.summary}</p>
+          <p className="mt-2 flex justify-between font-mono text-[10px] text-ink-faint">
+            <span>low</span>
+            <span>critical</span>
+          </p>
+        </div>
+        <div className="lg:col-span-8">
+          <p className="eyebrow">Executive summary</p>
+          <p className="mt-3 text-pretty text-xl leading-relaxed text-ink md:text-[22px]">{report.executive_summary}</p>
+        </div>
+      </motion.div>
+
+      {/* two columns */}
+      <div className="mt-12 grid gap-6 lg:grid-cols-2">
+        <motion.article {...rise(0.1)} className="card p-5 sm:p-6">
+          <p className="eyebrow">financial_analysis_agent</p>
+          <h3 className="mt-2 text-xl font-medium tracking-tight">Financial Analysis</h3>
+          <p className="mt-2 text-sm leading-relaxed text-ink-muted">{report.financial_analysis.summary}</p>
 
           {metricEntries.length > 0 ? (
-            <dl className="mt-4 grid grid-cols-2 gap-2.5">
+            <dl className="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line [&>*:last-child:nth-child(odd)]:col-span-2">
               {metricEntries.map(([key, value]) => (
-                <div key={key} className="rounded-lg border border-slate-800 bg-slate-900/70 p-2.5">
-                  <dt className="text-xs text-slate-400">{formatMetricLabel(key)}</dt>
-                  <dd className="mt-0.5 font-mono text-sm font-semibold text-slate-100">
-                    {formatMetricValue(key, value)}
-                  </dd>
+                <div key={key} className="bg-card p-3">
+                  <dt className="text-[11px] text-ink-muted">{formatMetricLabel(key)}</dt>
+                  <dd className="mt-1 font-serif text-2xl leading-none">{formatMetricValue(key, value)}</dd>
                 </div>
               ))}
             </dl>
           ) : null}
 
-          <div className="mt-4">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-              Financial Anomalies
-            </h4>
-            {report.financial_analysis.anomalies.length > 0 ? (
-              <ul className="mt-2 space-y-2">
-                {report.financial_analysis.anomalies.map((item, idx) => {
-                  const normalized = normalizeFindingItem(item);
-                  return (
-                    <li
-                      key={`${normalized.title}-${idx}`}
-                      className="rounded-lg border border-amber-500/30 bg-amber-950/30 p-2.5 text-sm text-amber-100"
-                    >
-                      <span className="font-medium">{normalized.title}</span>
-                      {normalized.detail ? (
-                        <p className="mt-1 text-xs text-amber-200/90">{normalized.detail}</p>
-                      ) : null}
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : (
-              <p className="mt-2 text-xs text-emerald-300">No material financial anomalies flagged.</p>
-            )}
-          </div>
+          <h4 className="eyebrow mt-6">Financial anomalies</h4>
+          {report.financial_analysis.anomalies.length > 0 ? (
+            <ul className="mt-2 divide-y divide-line">
+              {report.financial_analysis.anomalies.map((item, idx) => {
+                const n = normalizeFindingItem(item);
+                return (
+                  <li key={`${n.title}-${idx}`} className="flex gap-3 py-3 text-sm">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-warn" />
+                    <span>
+                      <span className="font-medium">{n.title}</span>
+                      {n.detail ? <span className="mt-0.5 block text-xs leading-relaxed text-ink-muted">{n.detail}</span> : null}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className="mt-2 text-sm text-ok">No material financial anomalies flagged.</p>
+          )}
 
           {report.financial_analysis.sources.length > 0 ? (
-            <div className="mt-4 border-t border-slate-800 pt-3">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Sources</h4>
+            <div className="mt-5 border-t border-line pt-3">
+              <h4 className="eyebrow !text-[10px]">Sources</h4>
               <ul className="mt-1.5 space-y-1">
                 {report.financial_analysis.sources.map((src) => (
-                  <li key={src} className="break-all font-mono text-xs text-slate-300">
+                  <li key={src} className="break-all font-mono text-[11px] text-ink-muted">
                     {src}
                   </li>
                 ))}
               </ul>
             </div>
           ) : null}
-        </article>
+        </motion.article>
 
-        {/* Compliance & Audit Card */}
-        <article className="rounded-xl border border-slate-800 bg-[#0B101B] p-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="h-5 w-5 text-emerald-300" aria-hidden="true" />
-              <h3 className="text-base font-semibold text-slate-50">Compliance &amp; Controls Audit</h3>
+        <motion.article {...rise(0.18)} className="card p-5 sm:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <div>
+              <p className="eyebrow">audit_compliance_agent</p>
+              <h3 className="mt-2 text-xl font-medium tracking-tight">Compliance &amp; Controls Audit</h3>
             </div>
             <span
-              className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
-                report.compliance_audit.compliant
-                  ? 'border-emerald-500/40 bg-emerald-950/60 text-emerald-200'
-                  : 'border-red-500/40 bg-red-950/60 text-red-200'
+              className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                report.compliance_audit.compliant ? 'bg-ok-soft text-ok' : 'bg-bad-soft text-bad'
               }`}
             >
-              {report.compliance_audit.compliant ? (
-                <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-              ) : (
-                <AlertOctagon className="h-3.5 w-3.5" aria-hidden="true" />
-              )}
-              <span>{report.compliance_audit.compliant ? 'COMPLIANT' : 'NON-COMPLIANT'}</span>
+              {report.compliance_audit.compliant ? 'COMPLIANT' : 'NON-COMPLIANT'}
             </span>
           </div>
+          <p className="mt-1 font-mono text-[11px] text-ink-muted">Policy ID: {report.compliance_audit.policy_id}</p>
+          <p className="mt-2 text-sm leading-relaxed text-ink-muted">{report.compliance_audit.summary}</p>
 
-          <p className="mt-1 font-mono text-xs text-slate-400">
-            Policy ID: {report.compliance_audit.policy_id}
-          </p>
-          <p className="mt-2 text-sm leading-relaxed text-slate-300">{report.compliance_audit.summary}</p>
+          <h4 className="eyebrow mt-6">Controls evaluated ({report.compliance_audit.controls_evaluated.length})</h4>
+          {report.compliance_audit.controls_evaluated.length > 0 ? (
+            <ul className="mt-2 divide-y divide-line">
+              {report.compliance_audit.controls_evaluated.map((item, idx) => {
+                const n = normalizeFindingItem(item);
+                return (
+                  <li key={`${n.title}-${idx}`} className="py-2.5 text-sm">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="font-medium">{n.title}</span>
+                      {n.badge ? <span className="font-mono text-[11px] text-ink-muted">{n.badge}</span> : null}
+                    </div>
+                    {n.detail ? <p className="mt-0.5 text-xs leading-relaxed text-ink-muted">{n.detail}</p> : null}
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className="mt-2 text-sm text-ink-muted">No individual controls listed.</p>
+          )}
 
-          <div className="mt-4">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-              Controls Evaluated ({report.compliance_audit.controls_evaluated.length})
-            </h4>
-            {report.compliance_audit.controls_evaluated.length > 0 ? (
-              <ul className="mt-2 space-y-2">
-                {report.compliance_audit.controls_evaluated.map((item, idx) => {
-                  const normalized = normalizeFindingItem(item);
-                  return (
-                    <li
-                      key={`${normalized.title}-${idx}`}
-                      className="rounded-lg border border-slate-800 bg-slate-900/70 p-2.5 text-sm text-slate-200"
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <span className="font-medium text-slate-100">{normalized.title}</span>
-                        {normalized.badge ? (
-                          <span className="rounded border border-slate-700 bg-slate-800 px-2 py-0.5 font-mono text-xs text-sky-300">
-                            {normalized.badge}
-                          </span>
-                        ) : null}
-                      </div>
-                      {normalized.detail ? (
-                        <p className="mt-1 text-xs text-slate-300">{normalized.detail}</p>
-                      ) : null}
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : (
-              <p className="mt-2 text-xs text-slate-400">No individual controls listed.</p>
-            )}
-          </div>
-
-          <div className="mt-4">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-              Control Violations
-            </h4>
-            {report.compliance_audit.violations.length > 0 ? (
-              <ul className="mt-2 space-y-2">
-                {report.compliance_audit.violations.map((item, idx) => {
-                  const normalized = normalizeFindingItem(item);
-                  return (
-                    <li
-                      key={`${normalized.title}-${idx}`}
-                      className="rounded-lg border border-red-500/40 bg-red-950/40 p-2.5 text-sm text-red-100"
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <span className="font-semibold">{normalized.title}</span>
-                        {normalized.severity ? (
-                          <span className="rounded border border-red-500/40 bg-red-900/60 px-2 py-0.5 font-mono text-xs font-bold text-red-200">
-                            {normalized.severity}
-                          </span>
-                        ) : null}
-                      </div>
-                      {normalized.detail ? (
-                        <p className="mt-1 text-xs text-red-200/90">{normalized.detail}</p>
-                      ) : null}
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : (
-              <p className="mt-2 text-xs text-emerald-300">Zero compliance violations detected.</p>
-            )}
-          </div>
-        </article>
+          <h4 className="eyebrow mt-6">Control violations</h4>
+          {report.compliance_audit.violations.length > 0 ? (
+            <ul className="mt-2 space-y-2">
+              {report.compliance_audit.violations.map((item, idx) => {
+                const n = normalizeFindingItem(item);
+                return (
+                  <li key={`${n.title}-${idx}`} className="rounded-xl border border-bad/25 bg-bad-soft/50 p-3 text-sm">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="font-medium text-bad">{n.title}</span>
+                      {n.severity ? <span className="font-mono text-[11px] font-semibold text-bad">{n.severity}</span> : null}
+                    </div>
+                    {n.detail ? <p className="mt-1 text-xs leading-relaxed text-ink-soft">{n.detail}</p> : null}
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className="mt-2 text-sm text-ok">Zero compliance violations detected.</p>
+          )}
+        </motion.article>
       </div>
 
-      {/* Actionable Recommendations */}
-      <div className="mt-4 rounded-xl border border-slate-800 bg-[#0B101B] p-4">
-        <div className="flex items-center gap-2">
-          <ListChecks className="h-5 w-5 text-emerald-300" aria-hidden="true" />
-          <h3 className="text-base font-semibold text-slate-50">Actionable Recommendations</h3>
-        </div>
+      <motion.div {...rise(0.25)} className="mt-10">
+        <p className="eyebrow">Actionable recommendations</p>
         {report.recommendations.length > 0 ? (
-          <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-slate-200">
+          <ol className="mt-3 border-b border-line">
             {report.recommendations.map((item, idx) => {
-              const normalized = normalizeFindingItem(item);
+              const n = normalizeFindingItem(item);
               return (
-                <li key={`${normalized.title}-${idx}`} className="leading-relaxed">
-                  <span className="font-medium text-slate-100">{normalized.title}</span>
-                  {normalized.detail ? (
-                    <span className="text-slate-300"> — {normalized.detail}</span>
-                  ) : null}
+                <li key={`${n.title}-${idx}`} className="grid grid-cols-[40px_1fr] gap-2 border-t border-line py-4 text-[15px] leading-relaxed">
+                  <span className="font-mono text-xs text-accent">{String(idx + 1).padStart(2, '0')}</span>
+                  <span>
+                    <span className="font-medium">{n.title}</span>
+                    {n.detail ? <span className="text-ink-muted"> — {n.detail}</span> : null}
+                  </span>
                 </li>
               );
             })}
           </ol>
         ) : (
-          <p className="mt-2 text-sm text-slate-400">No remediation actions required.</p>
+          <p className="mt-2 flex items-center gap-2 text-sm text-ink-muted">
+            <Check className="h-4 w-4 text-ok" /> No remediation actions required.
+          </p>
         )}
-      </div>
+      </motion.div>
 
-      {showRawJson ? (
-        <div id="raw-json-panel" className="mt-4 rounded-xl border border-slate-800 bg-[#060911] p-4">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-            Raw Orchestrator JSON Response
-          </h3>
-          <pre className="mt-2 max-h-96 overflow-auto font-mono text-xs leading-relaxed text-emerald-200">
-            {JSON.stringify(report, null, 2)}
-          </pre>
-        </div>
-      ) : null}
+      <AnimatePresence initial={false}>
+        {showRawJson ? (
+          <motion.div
+            id="raw-json-panel"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.6, ease: EASE }}
+            className="overflow-hidden"
+          >
+            <div className="mt-6 rounded-[14px] bg-ink p-5">
+              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-paper/50">Raw orchestrator JSON response</p>
+              <pre className="mt-3 max-h-96 overflow-auto font-mono text-xs leading-relaxed text-paper/85">
+                {JSON.stringify(report, null, 2)}
+              </pre>
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </section>
   );
 }
