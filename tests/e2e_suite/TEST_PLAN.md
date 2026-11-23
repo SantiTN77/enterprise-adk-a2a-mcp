@@ -38,7 +38,7 @@ Every active Project 1 row in `PROJECT.md § Feature Inventory` (rows 1–11; ro
 | **8** | Opaque-Box E2E Test Suite (Tiers 1–4) | `tests/e2e_suite/**` (`self_verify` + `live_e2e`) | `self-verify` + `live` | ✓ | ✓ | ✓ | ✓ |
 | **9** | Live Cloud Build + GCP + Vercel Deployment | Cross-cutting Live Gate (`F1`–`F7`) | `live` | ✓ | ✓ | ✓ | ✓ |
 | **10** | Public GitHub Repo & Secret Hygiene (`0` leaked secrets, `.gitignore`, `pnpm` exclusively) | `F9-HYGIENE-ASSETS` | `static-infra` + `live` | ✓ | ✓ | — | — |
-| **11** | Video Presentation Assets & Chrome + `/grill-me` Verification | `F7-WEB-UI` (Chrome 0-error), `F9-HYGIENE-ASSETS` | `static-infra` + `live` | ✓ | ✓ | ✓ | ✓ |
+| **11** | Video Presentation Assets & Chrome Verification | `F7-WEB-UI` (Chrome 0-error), `F9-HYGIENE-ASSETS` | `static-infra` + `live` | ✓ | ✓ | ✓ | ✓ |
 | **12–13** | Project 2 (`GATED-P2`) & Project 3 (`GATED-P3`) | **Out of Scope (Gated)** | N/A | — | — | — | — |
 
 ### E2E Feature Areas (`F1`–`F9`)

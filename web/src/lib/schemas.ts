@@ -21,7 +21,7 @@ export const AnalyzeRequestSchema = z.object({
   persist_report: z.boolean().optional().default(true),
   document_text: z.preprocess(
     (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
-    z.string().trim().max(200_000, 'document_text must be at most 200,000 characters').optional(),
+    z.string().trim().max(20_000, 'document_text must be at most 20,000 characters (public demo limit)').optional(),
   ),
 });
 

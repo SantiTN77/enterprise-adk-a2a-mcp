@@ -1,17 +1,25 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import {
   BffConfigError,
   BffUpstreamError,
   callOrchestrator,
   sanitizeErrorText,
 } from '@/lib/gcp-bff';
+import { clientKey, rateLimit, tooManyRequests } from '@/lib/rate-limit';
 import { AnalyzeRequestSchema, formatZodErrors } from '@/lib/schemas';
 import type { AnalyzeResponse } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 120;
 
-export async function POST(request: Request): Promise<NextResponse> {
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  // Each analysis fans out to 3 Gemini-backed agents: cap anonymous usage of the public demo.
+  const key = clientKey(request);
+  const minute = rateLimit(`a:m:${key}`, 3, 60_000);
+  if (!minute.ok) return tooManyRequests(minute.retryAfterSec);
+  const day = rateLimit(`a:d:${key}`, 25, 86_400_000);
+  if (!day.ok) return tooManyRequests(day.retryAfterSec);
+
   let rawBody: unknown;
   try {
     rawBody = await request.json();

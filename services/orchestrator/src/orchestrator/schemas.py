@@ -36,7 +36,7 @@ class AnalyzeRequest(BaseModel):
     scenario_id: str = Field(min_length=1, max_length=128)
     doc_id: str | None = Field(default=None, max_length=256)
     prompt: str = Field(min_length=1, max_length=8000)
-    document_text: str | None = Field(default=None, max_length=250_000)
+    document_text: str | None = Field(default=None, max_length=20_000)
     persist_report: bool = Field(default=True)
 
     @field_validator("scenario_id")

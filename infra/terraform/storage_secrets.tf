@@ -14,6 +14,18 @@ resource "google_storage_bucket" "docs" {
   public_access_prevention    = "enforced"
   force_destroy               = var.bucket_force_destroy
 
+  # Reports written by the public demo are ephemeral: expire them after 30 days so
+  # anonymous traffic can never grow storage cost unbounded.
+  lifecycle_rule {
+    condition {
+      age            = 30
+      matches_prefix = ["reports/"]
+    }
+    action {
+      type = "Delete"
+    }
+  }
+
   depends_on = [google_project_service.apis]
 }
 
