@@ -2,6 +2,12 @@
 
 An enterprise-grade multi-agent financial analysis and SOX/SOC2 compliance auditing system built with **Google ADK (`2.15.0`)**, **Agent-to-Agent (`A2A v1.0`)**, **Model Context Protocol (`MCP 2.3.0` stdio `MCPServer`)**, **Vertex AI (`gemini-3.8-flash` on `global`)**, **Private GCP Cloud Run (`$0` idle cost)**, and a **Next.js 16 App Router UI + Server-Side OIDC BFF** on **Vercel Fluid Compute**.
 
+## Demo
+
+[![Watch the narrated demo](docs/media/demo-poster.jpg)](https://github.com/SantiTN77/enterprise-adk-a2a-mcp/releases/download/v1.0.0/adk-demo.mp4)
+
+**[▶ Watch the 1080p narrated demo](https://github.com/SantiTN77/enterprise-adk-a2a-mcp/releases/download/v1.0.0/adk-demo.mp4)** · **[Open the live app](https://enterprise-adk-a2a-mcp.vercel.app)**
+
 ## Live Deployment
 
 - **Interactive Web Console (Vercel Production)**: [https://enterprise-adk-a2a-mcp.vercel.app](https://enterprise-adk-a2a-mcp.vercel.app)
@@ -125,3 +131,8 @@ vercel --prod
 - **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — Sequence diagrams, protocol deep-dive, ADRs, and security threat model.
 - **[docs/DEMO_WALKTHROUGH.md](docs/DEMO_WALKTHROUGH.md)** — Pre-flight IAM/health checks, 1-click scenario walkthroughs, and troubleshooting.
 - **[docs/VIDEO_SCRIPT.md](docs/VIDEO_SCRIPT.md)** — 3-minute timestamped presentation script with visual cues and spoken narration.
+
+## Author
+
+**Daniel Tafur** — AI Agent Engineer · AI Solutions Architect (GCP)  
+[LinkedIn](https://www.linkedin.com/in/danielsantiagotafur/) · [Portfolio](https://danieltafur.vercel.app)
