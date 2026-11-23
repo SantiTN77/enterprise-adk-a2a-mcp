@@ -2,6 +2,14 @@
 
 An enterprise-grade multi-agent financial analysis and SOX/SOC2 compliance auditing system built with **Google ADK (`2.15.0`)**, **Agent-to-Agent (`A2A v1.0`)**, **Model Context Protocol (`MCP 2.3.0` stdio `MCPServer`)**, **Vertex AI (`gemini-3.8-flash` on `global`)**, **Private GCP Cloud Run (`$0` idle cost)**, and a **Next.js 16 App Router UI + Server-Side OIDC BFF** on **Vercel Fluid Compute**.
 
+## Live Deployment
+
+- **Interactive Web Console (Vercel Production)**: [https://enterprise-adk-a2a-mcp.vercel.app](https://enterprise-adk-a2a-mcp.vercel.app)
+- **Private Cloud Run Services (`us-central1`, IAM-enforced — direct unauthenticated calls return `401/403`)**:
+  - `adk-orchestrator` (`min_instance_count = 0`, `max_instance_count = 2`, invoked exclusively by `vercel-bff-invoker` SA via server-side OIDC)
+  - `adk-financial-agent` (`min_instance_count = 0`, `max_instance_count = 2`, invoked exclusively by `adk-orchestrator` SA via A2A + OIDC)
+  - `adk-compliance-agent` (`min_instance_count = 0`, `max_instance_count = 2`, invoked exclusively by `adk-orchestrator` SA via A2A + OIDC)
+
 ---
 
 ## System Architecture

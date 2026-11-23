@@ -13,6 +13,15 @@ from lib.oidc_client import OidcHttpClient, OidcTokenMinter
 SUITE_DIR = Path(__file__).resolve().parent
 
 
+def pytest_ignore_collect(collection_path: Path, config: pytest.Config) -> bool | None:
+    if config.option.collectonly:
+        return None
+    markexpr = (config.option.markexpr or "").strip()
+    if collection_path.name == "test_self_verify.py" and markexpr != "self_verify":
+        return True
+    return None
+
+
 def _is_live_execution(config: pytest.Config, items: list[pytest.Item] | None = None) -> bool:
     if config.option.collectonly:
         return False

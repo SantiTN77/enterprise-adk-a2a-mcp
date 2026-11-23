@@ -68,7 +68,7 @@ try {
             Write-Host "[WARN] playwright install chromium exited $LASTEXITCODE; continuing with cached/system Chrome fallback." -ForegroundColor Yellow
         }
 
-        Invoke-Uv -UvArgs @("run", "--frozen", "pytest", "-m", "live_e2e or static_repo")
+        Invoke-Uv -UvArgs @("run", "--frozen", "pytest", "--ignore=test_self_verify.py", "-m", "live_e2e or static_repo")
         exit $LASTEXITCODE
     }
 
@@ -83,7 +83,7 @@ try {
             exit $LASTEXITCODE
         }
 
-        Invoke-Uv -UvArgs @("run", "--frozen", "pytest", "-m", "self_verify")
+        Invoke-Uv -UvArgs @("run", "--frozen", "pytest", "test_self_verify.py", "-m", "self_verify")
         exit $LASTEXITCODE
     }
 
@@ -93,7 +93,7 @@ try {
             exit $LASTEXITCODE
         }
 
-        Invoke-Uv -UvArgs @("run", "--frozen", "pytest", "-m", "static_repo")
+        Invoke-Uv -UvArgs @("run", "--frozen", "pytest", "--ignore=test_self_verify.py", "-m", "static_repo")
         exit $LASTEXITCODE
     }
 } finally {

@@ -88,8 +88,9 @@ class OidcTokenMinter:
         *,
         for_specialized_agent: bool = False,
         force_refresh: bool = False,
+        preserve_audience: bool = False,
     ) -> str:
-        aud = audience.rstrip("/")
+        aud = audience if preserve_audience else audience.rstrip("/")
         if self.custom_minter is not None:
             return self.custom_minter(aud)
 
