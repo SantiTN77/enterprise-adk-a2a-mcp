@@ -4,9 +4,12 @@ An enterprise-grade multi-agent financial analysis and SOX/SOC2 compliance audit
 
 ## Demo
 
-[![Watch the narrated demo](docs/media/demo-poster.jpg)](https://github.com/SantiTN77/enterprise-adk-a2a-mcp/releases/download/v1.0.0/adk-demo.mp4)
+| English | Español |
+| --- | --- |
+| [![Watch the narrated demo](docs/media/demo-poster.jpg)](https://github.com/SantiTN77/enterprise-adk-a2a-mcp/releases/download/v1.1.0/adk-demo.mp4) | [![Ver la demo narrada](docs/media/demo-poster-es.jpg)](https://github.com/SantiTN77/enterprise-adk-a2a-mcp/releases/download/v1.1.0/adk-demo-es.mp4) |
+| **[▶ Narrated demo (EN)](https://github.com/SantiTN77/enterprise-adk-a2a-mcp/releases/download/v1.1.0/adk-demo.mp4)** | **[▶ Demo narrada (ES)](https://github.com/SantiTN77/enterprise-adk-a2a-mcp/releases/download/v1.1.0/adk-demo-es.mp4)** |
 
-**[▶ Watch the 1080p narrated demo](https://github.com/SantiTN77/enterprise-adk-a2a-mcp/releases/download/v1.0.0/adk-demo.mp4)** · **[Open the live app](https://enterprise-adk-a2a-mcp.vercel.app)**
+**[Open the live app](https://enterprise-adk-a2a-mcp.vercel.app)** — the UI is bilingual: switch **EN / ES** in the header, or open it directly in Spanish with [`?lang=es`](https://enterprise-adk-a2a-mcp.vercel.app/?lang=es).
 
 ## Live Deployment
 
