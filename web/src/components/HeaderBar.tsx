@@ -10,6 +10,7 @@ function GithubMark({ className }: { className?: string }) {
   );
 }
 import type { HealthResponse } from '@/lib/types';
+import { STRINGS, useLang, type Lang } from '@/lib/i18n';
 
 interface HeaderBarProps {
   health: HealthResponse | null;
@@ -20,21 +21,23 @@ interface HeaderBarProps {
 }
 
 export function HeaderBar({ health, healthLoading, onRefreshHealth, postureExpanded, onTogglePosture }: HeaderBarProps) {
+  const [lang, setLang] = useLang();
+  const t = STRINGS[lang];
   const isOk = health?.status === 'ok';
   const authModeLabel =
     health?.bff.auth_mode === 'oidc-sa'
-      ? 'OIDC Service Account'
+      ? t.auth.oidc
       : health?.bff.auth_mode === 'local-dev'
-        ? 'Local Dev Proxy'
+        ? t.auth.local
         : health
-          ? 'Unconfigured'
-          : 'Checking…';
+          ? t.auth.none
+          : t.auth.checking;
 
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-paper/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-4 px-5 sm:px-8">
         <h1 className="truncate text-[15px] font-medium tracking-tight">
-          Multi-Agent Risk <span className="font-serif text-lg italic text-accent">&amp;</span> Compliance Console
+          {t.titleA} <span className="font-serif text-lg italic text-accent">&amp;</span> {t.titleB}
         </h1>
 
         <div className="flex items-center gap-2 text-xs sm:gap-3">
@@ -44,7 +47,7 @@ export function HeaderBar({ health, healthLoading, onRefreshHealth, postureExpan
               <span className={`relative inline-flex h-2 w-2 rounded-full ${isOk ? 'bg-ok' : 'bg-warn'}`} />
             </span>
             <span>
-              BFF: {isOk ? 'Connected' : health ? 'Degraded' : 'Checking'} · {authModeLabel}
+              BFF: {isOk ? t.bff.ok : health ? t.bff.degraded : t.bff.checking} · {authModeLabel}
             </span>
           </div>
 
@@ -52,7 +55,7 @@ export function HeaderBar({ health, healthLoading, onRefreshHealth, postureExpan
             type="button"
             onClick={onRefreshHealth}
             disabled={healthLoading}
-            aria-label="Refresh BFF and Cloud Run orchestrator health status"
+            aria-label={t.refresh}
             className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-line-strong text-ink transition-colors hover:border-ink disabled:opacity-60"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${healthLoading ? 'animate-spin motion-reduce:animate-none' : ''}`} aria-hidden="true" />
@@ -65,7 +68,7 @@ export function HeaderBar({ health, healthLoading, onRefreshHealth, postureExpan
             aria-controls="security-posture-drawer"
             className="hidden rounded-full border border-line-strong px-3 py-1.5 text-ink transition-colors hover:border-ink sm:inline-flex"
           >
-            {postureExpanded ? 'Hide Security Posture' : 'Architecture & Security Posture'}
+            {postureExpanded ? t.hidePosture : t.showPosture}
           </button>
 
           <a
@@ -74,8 +77,23 @@ export function HeaderBar({ health, healthLoading, onRefreshHealth, postureExpan
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 text-paper"
           >
-            <GithubMark className="h-3.5 w-3.5" /> Source
+            <GithubMark className="h-3.5 w-3.5" /> {t.source}
           </a>
+
+          <div className="isolate flex rounded-full border border-line-strong p-0.5 font-mono text-[11px]" role="group" aria-label="Language">
+            {(['en', 'es'] as Lang[]).map((l) => (
+              <button
+                key={l}
+                type="button"
+                data-lang={l}
+                aria-pressed={lang === l}
+                onClick={() => setLang(l)}
+                className={`rounded-full px-2.5 py-1 uppercase transition-colors duration-300 ${lang === l ? 'bg-ink text-paper' : 'text-ink-muted hover:text-ink'}`}
+              >
+                {l}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </header>

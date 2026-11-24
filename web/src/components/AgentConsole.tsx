@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from 'motion/react';
 import { AlertCircle, ArrowRight, ChevronDown, CornerDownLeft } from 'lucide-react';
 import { DEFAULT_SCENARIOS, SCENARIO_UI_META } from '@/lib/scenarios';
 import type { AnalyzeResponse, HealthResponse, ScenarioItem, ScenariosResponse } from '@/lib/types';
+import { ES_PROMPT_SUFFIX, SCENARIO_ES, STRINGS, useLang } from '@/lib/i18n';
 import { HeaderBar } from './HeaderBar';
 import { SecurityPosturePanel } from './SecurityPosturePanel';
 import { ExecutionTracePanel } from './ExecutionTracePanel';
@@ -46,6 +47,8 @@ async function fetchStatusAndScenarios(): Promise<{
 }
 
 export function AgentConsole() {
+  const [lang] = useLang();
+  const t = STRINGS[lang];
   const [scenarios, setScenarios] = useState<ScenarioItem[]>(DEFAULT_SCENARIOS);
   const [selectedId, setSelectedId] = useState<string>(DEFAULT_SCENARIOS[0].id);
   const [prompt, setPrompt] = useState<string>(DEFAULT_SCENARIOS[0].default_prompt);
@@ -108,10 +111,11 @@ export function AgentConsole() {
 
   async function executeAnalysis(overrideScenario?: ScenarioItem) {
     const targetScenario = overrideScenario ?? activeScenario;
-    const effectivePrompt = overrideScenario ? overrideScenario.default_prompt : prompt;
+    const basePrompt = overrideScenario ? overrideScenario.default_prompt : prompt;
+    const effectivePrompt = lang === 'es' && !basePrompt.includes('in Spanish') ? basePrompt + ES_PROMPT_SUFFIX : basePrompt;
 
     if (effectivePrompt.trim().length < 5) {
-      setErrorMessage('Prompt must be at least 5 characters.');
+      setErrorMessage(t.promptShort);
       return;
     }
 
@@ -159,7 +163,7 @@ export function AgentConsole() {
       if (err instanceof Error && err.name === 'AbortError') {
         return;
       }
-      setErrorMessage('Unable to reach BFF /api/analyze endpoint. Check /api/health and try again.');
+      setErrorMessage(t.unreachable);
     } finally {
       setIsRunning(false);
     }
@@ -191,14 +195,13 @@ export function AgentConsole() {
         {/* intro */}
         <section className="grid grid-cols-12 gap-6 pt-12 md:pt-16">
           <motion.div {...rise()} className="col-span-12 lg:col-span-8">
-            <p className="eyebrow">Google ADK 2.15 · A2A v1.0 · Stdio MCP 2.3.0 · Vertex AI gemini-3.8-flash</p>
+            <p className="eyebrow">{t.eyebrow}</p>
             <h2 className="mt-4 text-balance text-4xl font-medium leading-[1.02] tracking-[-0.035em] md:text-6xl">
-              One orchestrator. Specialist agents. <span className="font-serif italic text-accent">Zero public endpoints.</span>
+              {t.h1a} <span className="font-serif italic text-accent">{t.h1b}</span>
             </h2>
           </motion.div>
           <motion.p {...rise(0.1)} className="col-span-12 self-end text-pretty text-[15px] leading-relaxed text-ink-muted lg:col-span-4">
-            A Google ADK orchestrator on private Cloud Run delegates over A2A to a financial agent and a compliance agent.
-            Each one reads evidence through its own MCP tools and the orchestrator returns a single, auditable report.
+            {t.lede}
           </motion.p>
         </section>
 
@@ -208,13 +211,13 @@ export function AgentConsole() {
         <section aria-labelledby="scenarios-heading" data-demo="scenarios">
           <div className="flex flex-wrap items-end justify-between gap-3 border-t border-ink pt-5">
             <div>
-              <p className="eyebrow">Synthetic enterprise cases</p>
+              <p className="eyebrow">{t.casesEyebrow}</p>
               <h2 id="scenarios-heading" className="mt-2 text-2xl font-medium tracking-tight md:text-3xl">
-                1-Click Synthetic Enterprise Scenarios
+                {t.casesTitle}
               </h2>
             </div>
             <p className="text-xs text-ink-muted">
-              Evidence in GCS · policy in Secret Manager{' '}
+              {t.evidence}{' '}
               <code className="font-mono text-ink">adk-compliance-policy-rules</code>
             </p>
           </div>
@@ -224,6 +227,8 @@ export function AgentConsole() {
               const isSelected = scenario.id === activeScenario.id;
               const uiMeta = SCENARIO_UI_META[scenario.id];
               const dot = uiMeta?.tone === 'success' ? 'bg-ok' : uiMeta?.tone === 'critical' ? 'bg-bad' : 'bg-warn';
+              const es = lang === 'es' ? SCENARIO_ES[scenario.id] : undefined;
+              const signal = es?.signal ?? uiMeta?.expectedSignal ?? '';
               const txt = uiMeta?.tone === 'success' ? 'text-ok' : uiMeta?.tone === 'critical' ? 'text-bad' : 'text-warn';
               return (
                 <motion.div
@@ -242,16 +247,16 @@ export function AgentConsole() {
                       {uiMeta ? (
                         <span className={`inline-flex items-center gap-1.5 font-mono text-[10.5px] ${txt}`}>
                           <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
-                          {uiMeta.expectedSignal.split(' · ')[0]}
+                          {signal.split(' · ')[0]}
                         </span>
                       ) : null}
                     </div>
-                    <h3 className="mt-4 text-lg font-medium leading-snug tracking-tight">{scenario.title}</h3>
+                    <h3 className="mt-4 text-lg font-medium leading-snug tracking-tight">{es?.title ?? scenario.title}</h3>
                     {uiMeta ? <p className="mt-1 text-xs text-ink-muted">{uiMeta.company}</p> : null}
                     {uiMeta ? (
-                      <p className={`mt-3 text-xs ${txt}`}>{uiMeta.expectedSignal.split(' · ').slice(1).join(' · ')}</p>
+                      <p className={`mt-3 text-xs ${txt}`}>{signal.split(' · ').slice(1).join(' · ')}</p>
                     ) : null}
-                    <p className="mt-3 text-sm leading-relaxed text-ink-soft">{scenario.description}</p>
+                    <p className="mt-3 text-sm leading-relaxed text-ink-soft">{es?.description ?? scenario.description}</p>
                     <p className="mt-3 font-mono text-[11px] text-ink-faint">{scenario.doc_id}</p>
                   </div>
 
@@ -264,7 +269,7 @@ export function AgentConsole() {
                         isSelected ? 'border-ink bg-paper-deep text-ink' : 'border-line-strong text-ink-soft hover:border-ink'
                       }`}
                     >
-                      {isSelected ? 'Selected' : 'Select'}
+                      {isSelected ? t.selected : t.select}
                     </button>
                     <button
                       type="button"
@@ -273,7 +278,7 @@ export function AgentConsole() {
                       data-testid={`run-scenario-${scenario.id}`}
                       className="group inline-flex items-center justify-center gap-1.5 rounded-full bg-ink px-4 py-2 text-sm font-medium text-paper transition-transform duration-300 hover:-translate-y-px disabled:cursor-wait disabled:opacity-60"
                     >
-                      Run 1-Click
+                      {t.run1}
                       <ArrowRight
                         className="h-3.5 w-3.5 transition-transform duration-500 group-hover:translate-x-0.5"
                         aria-hidden="true"
@@ -289,7 +294,7 @@ export function AgentConsole() {
             <div className="grid gap-4 sm:grid-cols-3">
               <div>
                 <label htmlFor="scenario-selector" className="eyebrow block">
-                  Active scenario
+                  {t.activeScenario}
                 </label>
                 <div className="relative mt-2">
                   <select
@@ -305,7 +310,7 @@ export function AgentConsole() {
                   >
                     {scenarios.map((s) => (
                       <option key={s.id} value={s.id}>
-                        {s.title}
+                        {(lang === 'es' && SCENARIO_ES[s.id]?.title) || s.title}
                       </option>
                     ))}
                   </select>
@@ -314,7 +319,7 @@ export function AgentConsole() {
               </div>
               <div className="sm:col-span-2">
                 <label htmlFor="analysis-prompt" className="eyebrow block">
-                  Orchestrator prompt · {activeScenario.id}
+                  {t.prompt} · {activeScenario.id}
                 </label>
                 <textarea
                   id="analysis-prompt"
@@ -340,7 +345,7 @@ export function AgentConsole() {
                   aria-controls="custom-document-panel"
                   className="inline-flex items-center gap-2 rounded-full border border-line-strong px-3.5 py-2 transition-colors hover:border-ink"
                 >
-                  Optional Ad-Hoc Document Text
+                  {t.adhoc}
                   <ChevronDown
                     className={`h-4 w-4 transition-transform duration-500 ${showCustomDoc ? 'rotate-180' : ''}`}
                     aria-hidden="true"
@@ -354,7 +359,7 @@ export function AgentConsole() {
                     onChange={(e) => setPersistReport(e.target.checked)}
                     className="h-4 w-4 rounded accent-[#151412]"
                   />
-                  Persist report to GCS
+                  {t.persist}
                 </label>
               </div>
 
@@ -364,14 +369,14 @@ export function AgentConsole() {
                 data-testid="analyze-submit"
                 className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-paper transition-transform duration-300 hover:-translate-y-px disabled:cursor-wait disabled:opacity-70"
               >
-                {busy ? 'Running A2A + MCP Agents…' : 'Run Multi-Agent Analysis'}
+                {busy ? t.running : t.runAll}
                 <CornerDownLeft className="h-3.5 w-3.5 opacity-80" aria-hidden="true" />
               </button>
             </div>
 
             <div id="custom-document-panel" className={showCustomDoc ? 'mt-4' : 'hidden'}>
               <label htmlFor="custom-document-text" className="eyebrow block">
-                Custom document JSON / memo text (optional override)
+                {t.adhocLabel}
               </label>
               <textarea
                 id="custom-document-text"
@@ -380,7 +385,7 @@ export function AgentConsole() {
                 rows={5}
                 value={documentText}
                 onChange={(e) => setDocumentText(e.target.value)}
-                placeholder="Paste a financial statement JSON or a compliance memo for ad-hoc analysis…"
+                placeholder={t.adhocPh}
                 className="mt-2 w-full rounded-xl border border-line bg-paper/60 px-3.5 py-2.5 font-mono text-xs focus:border-ink focus:outline-none"
               />
             </div>
@@ -390,7 +395,7 @@ export function AgentConsole() {
             <div role="alert" className="mt-4 flex items-start gap-2.5 rounded-xl border border-bad/30 bg-bad-soft p-4 text-sm text-bad">
               <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
               <div>
-                <p className="font-medium">Execution Error</p>
+                <p className="font-medium">{t.execError}</p>
                 <p className="mt-0.5">{errorMessage}</p>
               </div>
             </div>
@@ -402,7 +407,7 @@ export function AgentConsole() {
         {report && !busy ? <ExecutiveReportPanel report={report} /> : null}
 
         <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-6 font-mono text-[11px] text-ink-muted">
-          <span>Built by Daniel Tafur · AI Agent Engineer</span>
+          <span>{t.built}</span>
           <a href="https://danieltafur.vercel.app" target="_blank" rel="noopener noreferrer" className="hover:text-ink">
             danieltafur.vercel.app ↗
           </a>

@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { Check, ClipboardCheck, Code2, Copy } from 'lucide-react';
 import type { AnalyzeResponse, RiskRating } from '@/lib/types';
 import { formatMetricLabel, formatMetricValue, normalizeFindingItem } from './finding-utils';
+import { STRINGS, useLang } from '@/lib/i18n';
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -17,6 +18,8 @@ const RISK: Record<RiskRating, { label: string; bg: string; text: string; level:
 
 export function ExecutiveReportPanel({ report }: { report: AnalyzeResponse }) {
   const reduce = useReducedMotion();
+  const [lang] = useLang();
+  const t = STRINGS[lang];
   const [showRawJson, setShowRawJson] = useState(false);
   const [copied, setCopied] = useState(false);
   const risk = RISK[report.overall_risk_rating];
@@ -39,9 +42,9 @@ export function ExecutiveReportPanel({ report }: { report: AnalyzeResponse }) {
     <section aria-labelledby="executive-report-heading" data-demo="report">
       <div className="flex flex-col gap-4 border-t border-ink pt-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="eyebrow">Synthesised by the orchestrator</p>
+          <p className="eyebrow">{t.reportEyebrow}</p>
           <h2 id="executive-report-heading" className="mt-2 text-2xl font-medium tracking-tight md:text-3xl">
-            Executive Risk &amp; Compliance Report
+            {t.reportTitle}
           </h2>
           <p className="mt-2 font-mono text-[11px] text-ink-muted">
             {report.run_id} · {report.scenario_id} · {report.doc_id} · {report.timestamp_utc}
@@ -56,16 +59,16 @@ export function ExecutiveReportPanel({ report }: { report: AnalyzeResponse }) {
             className="inline-flex items-center gap-2 rounded-full border border-line-strong px-4 py-2 transition-colors hover:border-ink"
           >
             <Code2 className="h-4 w-4" aria-hidden="true" />
-            {showRawJson ? 'Hide Raw JSON' : 'Show Raw JSON'}
+            {showRawJson ? t.hideJson : t.showJson}
           </button>
           <button
             type="button"
             onClick={handleCopyJson}
-            aria-label="Copy full analysis JSON report to clipboard"
+            aria-label={t.copyAria}
             className="inline-flex items-center gap-2 rounded-full border border-line-strong px-4 py-2 transition-colors hover:border-ink"
           >
             {copied ? <ClipboardCheck className="h-4 w-4 text-ok" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
-            {copied ? 'Copied JSON' : 'Copy JSON'}
+            {copied ? t.copied : t.copyJson}
           </button>
         </div>
       </div>
@@ -77,7 +80,7 @@ export function ExecutiveReportPanel({ report }: { report: AnalyzeResponse }) {
             data-testid="risk-rating-badge"
             className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold tracking-wide text-paper ${risk.bg}`}
           >
-            {risk.label}
+            {t.risk[report.overall_risk_rating]}
           </span>
           <div className="mt-5 flex gap-1.5" aria-hidden="true">
             {[1, 2, 3, 4].map((n) => (
@@ -91,12 +94,12 @@ export function ExecutiveReportPanel({ report }: { report: AnalyzeResponse }) {
             ))}
           </div>
           <p className="mt-2 flex justify-between font-mono text-[10px] text-ink-faint">
-            <span>low</span>
-            <span>critical</span>
+            <span>{t.low}</span>
+            <span>{t.critical}</span>
           </p>
         </div>
         <div className="lg:col-span-8">
-          <p className="eyebrow">Executive summary</p>
+          <p className="eyebrow">{t.summary}</p>
           <p className="mt-3 text-pretty text-xl leading-relaxed text-ink md:text-[22px]">{report.executive_summary}</p>
         </div>
       </motion.div>
@@ -105,7 +108,7 @@ export function ExecutiveReportPanel({ report }: { report: AnalyzeResponse }) {
       <div className="mt-12 grid gap-6 lg:grid-cols-2">
         <motion.article {...rise(0.1)} className="card p-5 sm:p-6">
           <p className="eyebrow">financial_analysis_agent</p>
-          <h3 className="mt-2 text-xl font-medium tracking-tight">Financial Analysis</h3>
+          <h3 className="mt-2 text-xl font-medium tracking-tight">{t.finTitle}</h3>
           <p className="mt-2 text-sm leading-relaxed text-ink-muted">{report.financial_analysis.summary}</p>
 
           {metricEntries.length > 0 ? (
@@ -119,7 +122,7 @@ export function ExecutiveReportPanel({ report }: { report: AnalyzeResponse }) {
             </dl>
           ) : null}
 
-          <h4 className="eyebrow mt-6">Financial anomalies</h4>
+          <h4 className="eyebrow mt-6">{t.anomalies}</h4>
           {report.financial_analysis.anomalies.length > 0 ? (
             <ul className="mt-2 divide-y divide-line">
               {report.financial_analysis.anomalies.map((item, idx) => {
@@ -136,12 +139,12 @@ export function ExecutiveReportPanel({ report }: { report: AnalyzeResponse }) {
               })}
             </ul>
           ) : (
-            <p className="mt-2 text-sm text-ok">No material financial anomalies flagged.</p>
+            <p className="mt-2 text-sm text-ok">{t.noAnomalies}</p>
           )}
 
           {report.financial_analysis.sources.length > 0 ? (
             <div className="mt-5 border-t border-line pt-3">
-              <h4 className="eyebrow !text-[10px]">Sources</h4>
+              <h4 className="eyebrow !text-[10px]">{t.sources}</h4>
               <ul className="mt-1.5 space-y-1">
                 {report.financial_analysis.sources.map((src) => (
                   <li key={src} className="break-all font-mono text-[11px] text-ink-muted">
@@ -157,20 +160,20 @@ export function ExecutiveReportPanel({ report }: { report: AnalyzeResponse }) {
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
               <p className="eyebrow">audit_compliance_agent</p>
-              <h3 className="mt-2 text-xl font-medium tracking-tight">Compliance &amp; Controls Audit</h3>
+              <h3 className="mt-2 text-xl font-medium tracking-tight">{t.compTitle}</h3>
             </div>
             <span
               className={`rounded-full px-3 py-1 text-xs font-semibold ${
                 report.compliance_audit.compliant ? 'bg-ok-soft text-ok' : 'bg-bad-soft text-bad'
               }`}
             >
-              {report.compliance_audit.compliant ? 'COMPLIANT' : 'NON-COMPLIANT'}
+              {report.compliance_audit.compliant ? t.compliant : t.nonCompliant}
             </span>
           </div>
-          <p className="mt-1 font-mono text-[11px] text-ink-muted">Policy ID: {report.compliance_audit.policy_id}</p>
+          <p className="mt-1 font-mono text-[11px] text-ink-muted">{t.policyId}: {report.compliance_audit.policy_id}</p>
           <p className="mt-2 text-sm leading-relaxed text-ink-muted">{report.compliance_audit.summary}</p>
 
-          <h4 className="eyebrow mt-6">Controls evaluated ({report.compliance_audit.controls_evaluated.length})</h4>
+          <h4 className="eyebrow mt-6">{t.controls} ({report.compliance_audit.controls_evaluated.length})</h4>
           {report.compliance_audit.controls_evaluated.length > 0 ? (
             <ul className="mt-2 divide-y divide-line">
               {report.compliance_audit.controls_evaluated.map((item, idx) => {
@@ -187,10 +190,10 @@ export function ExecutiveReportPanel({ report }: { report: AnalyzeResponse }) {
               })}
             </ul>
           ) : (
-            <p className="mt-2 text-sm text-ink-muted">No individual controls listed.</p>
+            <p className="mt-2 text-sm text-ink-muted">{t.noControls}</p>
           )}
 
-          <h4 className="eyebrow mt-6">Control violations</h4>
+          <h4 className="eyebrow mt-6">{t.violations}</h4>
           {report.compliance_audit.violations.length > 0 ? (
             <ul className="mt-2 space-y-2">
               {report.compliance_audit.violations.map((item, idx) => {
@@ -207,13 +210,13 @@ export function ExecutiveReportPanel({ report }: { report: AnalyzeResponse }) {
               })}
             </ul>
           ) : (
-            <p className="mt-2 text-sm text-ok">Zero compliance violations detected.</p>
+            <p className="mt-2 text-sm text-ok">{t.noViolations}</p>
           )}
         </motion.article>
       </div>
 
       <motion.div {...rise(0.25)} className="mt-10">
-        <p className="eyebrow">Actionable recommendations</p>
+        <p className="eyebrow">{t.recs}</p>
         {report.recommendations.length > 0 ? (
           <ol className="mt-3 border-b border-line">
             {report.recommendations.map((item, idx) => {
@@ -231,7 +234,7 @@ export function ExecutiveReportPanel({ report }: { report: AnalyzeResponse }) {
           </ol>
         ) : (
           <p className="mt-2 flex items-center gap-2 text-sm text-ink-muted">
-            <Check className="h-4 w-4 text-ok" /> No remediation actions required.
+            <Check className="h-4 w-4 text-ok" /> {t.noRecs}
           </p>
         )}
       </motion.div>
@@ -247,7 +250,7 @@ export function ExecutiveReportPanel({ report }: { report: AnalyzeResponse }) {
             className="overflow-hidden"
           >
             <div className="mt-6 rounded-[14px] bg-ink p-5">
-              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-paper/50">Raw orchestrator JSON response</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-paper/50">{t.rawJson}</p>
               <pre className="mt-3 max-h-96 overflow-auto font-mono text-xs leading-relaxed text-paper/85">
                 {JSON.stringify(report, null, 2)}
               </pre>
